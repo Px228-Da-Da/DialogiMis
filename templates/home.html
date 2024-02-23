@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+	<form class="login100-form-title p-b-51" id="searchForm">
+		<input type="text" id="searchQuery" name="search_query" placeholder="Search by username">
+	</form>
+	<div class="login100-form-title p-b-51" id="searchResults"></div>
+    <div class="limiter">
+        <div class="container-login100">
+            <div class="wrap-login100 p-t-50 p-b-90">
+                <span class="login100-form-title p-b-51">
+                    Welcome Chat!!<br>
+                </span>
+                <div class="container-login100-form-btn m-t-17">
+                    <button class="login100-form-btn">
+                        <a class="login100-form-btn" href="/logout">Logout</a>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    <script>
+        const searchForm = document.getElementById('searchForm');
+        const searchQueryInput = document.getElementById('searchQuery');
+        const searchResultsDiv = document.getElementById('searchResults');
+
+        searchQueryInput.addEventListener('input', function(event) {
+            const searchQuery = searchQueryInput.value;
+            fetch('/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    'search_query': searchQuery
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                searchResultsDiv.innerHTML = ''; // Clear previous results
+                if (data.users) {
+                    const userList = data.users.map(user => `<li>${user.username}</li>`).join('');
+                    searchResultsDiv.innerHTML = `<ul>${userList}</ul>`;
+                } else {
+                    searchResultsDiv.innerHTML = '<p>No results found.</p>';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+{% endblock %}
