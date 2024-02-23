@@ -1,14 +1,55 @@
 {% extends 'base.html' %}
 {% block content %}
-	<form class="login100-form-title p-b-51" id="searchForm">
-		<input type="text" id="searchQuery" name="search_query" placeholder="Search by username">
-	</form>
-	<div class="login100-form-title p-b-51" id="searchResults"></div>
+    
+    
+    
     <div class="limiter">
+        <div class="container-login100 wrap-login101">
+            <form class="login100-form-title" id="searchForm">
+                <div class="custom-input">
+                    <input type="text" id="searchQuery" name="search_query" placeholder="Search by username">
+                </div>
+            </form>
+            <div class="login100-form-title p-b-21" id="searchResults"></div>
+            <div class="scrollingtable">
+                <div>
+                  <div>
+                    <table>
+                      <tbody>
+                        <tr>frsgtdh</tr>
+                        <tr><td>Lorem ipsum</td><td>Dolor</td><td>Sit</td><td>Amet consectetur</td></tr>
+                        <tr><td>Lorem ipsum</td><td>Dolor</td><td>Sit</td><td>Amet consectetur</td></tr>
+                        <tr><td>Lorem ipsum</td><td>Dolor</td><td>Sit</td><td>Amet consectetur</td></tr>
+                        <tr><td>Lorem ipsum</td><td>Dolor</td><td>Sit</td><td>Amet consectetur</td></tr>
+                        <tr><td>Lorem ipsum</td><td>Dolor</td><td>Sit</td><td>Amet consectetur</td></tr>
+                        <tr><td>Lorem ipsum</td><td>Dolor</td><td>Sit</td><td>Amet consectetur</td></tr>
+                        <tr><td>Lorem ipsum</td><td>Dolor</td><td>Sit</td><td>Amet consectetur</td></tr>
+                        <tr><td>Lorem ipsum</td><td>Dolor</td><td>Sit</td><td>Amet consectetur</td></tr>
+                        <tr><td>Lorem ipsum</td><td>Dolor</td><td>Sit</td><td>Amet consectetur</td></tr>
+                        <tr>frsgtdh</tr>
+                        <tr>frsgtdh</tr>
+                        <tr>frsgtdh</tr>
+                        <tr>frsgtdh</tr>
+                        <tr>frsgtdh</tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            <span class="login100-form-title p-b-51">
+                Welcome {{ session.username }}!!
+            </span>
+        </div>
+    </div>
+
+
+    
+
+    <!-- <div class="limiter">
         <div class="container-login100">
             <div class="wrap-login100 p-t-50 p-b-90">
                 <span class="login100-form-title p-b-51">
-                    Welcome Chat!!<br>
+                    Welcome {{ session.username }}!!
                 </span>
                 <div class="container-login100-form-btn m-t-17">
                     <button class="login100-form-btn">
@@ -17,7 +58,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
     
     
     <script>
@@ -27,6 +68,10 @@
 
         searchQueryInput.addEventListener('input', function(event) {
             const searchQuery = searchQueryInput.value;
+            if (searchQuery.trim() === '') {
+                searchResultsDiv.innerHTML = ''; // Clear search results if search query is empty
+                return;
+            }
             fetch('/search', {
                 method: 'POST',
                 headers: {

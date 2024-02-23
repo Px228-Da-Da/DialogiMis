@@ -25,13 +25,19 @@ def index():
 
 
 
+
+
 @app.route('/register/', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         try:
-            db.session.add(User(username=request.form['username'], password=request.form['password']))
+            username = request.form['username']
+            password = request.form['password']
+            db.session.add(User(username=username, password=password))
             db.session.commit()
-            return redirect(url_for('login'))
+            session['username'] = username  # Store the username in the session
+            session['logged_in'] = True
+            return redirect(url_for('index'))
         except:
             return render_template('index.html', message="User Already Exists")
     else:
@@ -48,9 +54,11 @@ def login():
         p = request.form['password']
         data = User.query.filter_by(username=u, password=p).first()
         if data is not None:
+            session['username'] = u  # Store the username in the session
             session['logged_in'] = True
             return redirect(url_for('index'))
         return render_template('index.html', message="Incorrect Details")
+
 
 
 
