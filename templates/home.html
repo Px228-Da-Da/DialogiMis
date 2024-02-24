@@ -77,7 +77,6 @@
 
     const socket = io();
 
-
     let currentChatUser = '{{ session.username }}';
 
     // Получение сохраненных чатов из localStorage
@@ -90,75 +89,77 @@
         localStorage.setItem(key, JSON.stringify(data));
     };
 
-    
     function logout() {
         localStorage.clear();
         window.location.href = "/logout";
     }
 
     searchForm.addEventListener('input', function(event) {
-    const searchQuery = searchQueryInput.value;
-    if (searchQuery.trim() === '') {
-        searchResultsDiv.innerHTML = '';
-        chatDiv.style.display = 'block';
-        return;
-    }
-    fetch('/search', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-            'search_query': searchQuery
-        }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        searchResultsDiv.innerHTML = '';
-        if (data.users) {
-            data.users.forEach(user => {
-                if (!savedChats.includes(user.username)) {
-                    const button = document.createElement('button');
-                    button.textContent = user.username;
-                    button.addEventListener('click', function() {
-                        // Обновление текста в элементе <p> при нажатии на кнопку чата
-                        msgField.textContent = `Chat with ${user.username}`;
-                        currentChatUser = user.username;
+        const searchQuery = searchQueryInput.value;
+        if (searchQuery.trim() === '') {
+            searchResultsDiv.innerHTML = '';
+            chatDiv.style.display = 'block'; // Показываем чаты, если поле поиска пустое
+            return;
+        }
 
-                        const chatElement = document.createElement('div');
-                        chatElement.classList.add('limiter');
-                        chatElement.innerHTML = `
-                            <button class="chat-button" onclick="handleChatButtonClick('${user.username}')">
-                                <div class="limiter">
-                                    <div>
-                                        <div class="wrap-Chat_Favorite p-t-10 p-b-50">
-                                            <div class="container-login100-form-btn block">
-                                                <div class="wrap-kolo p-t-10 p-b-50">
+        // Скрываем чаты, если поле поиска не пустое
+        chatDiv.style.display = 'none';
+
+        fetch('/search', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                'search_query': searchQuery
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            searchResultsDiv.innerHTML = '';
+            if (data.users) {
+                data.users.forEach(user => {
+                    if (!savedChats.includes(user.username)) {
+                        const button = document.createElement('button');
+                        button.textContent = user.username;
+                        button.addEventListener('click', function() {
+                            // Обновление текста в элементе <p> при нажатии на кнопку чата
+                            msgField.textContent = `Chat with ${user.username}`;
+                            currentChatUser = user.username;
+
+                            const chatElement = document.createElement('div');
+                            chatElement.classList.add('limiter');
+                            chatElement.innerHTML = `
+                                <button class="chat-button" onclick="handleChatButtonClick('${user.username}')">
+                                    <div class="limiter">
+                                        <div>
+                                            <div class="wrap-Chat_Favorite p-t-10 p-b-50">
+                                                <div class="container-login100-form-btn block">
+                                                    <div class="wrap-kolo p-t-10 p-b-50">
+                                                    </div>
+                                                    <p class="Text_ChatUsername">${user.username}</p>
                                                 </div>
-                                                <p class="Text_ChatUsername">${user.username}</p>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </button>
-                        `;
-                        chatDiv.appendChild(chatElement);
+                                </button>
+                            `;
+                            chatDiv.appendChild(chatElement);
 
-                        // Добавление нового чата в массив сохраненных чатов
-                        savedChats.push(user.username);
-                        // Обновление localStorage
-                        updateLocalStorage('chats', savedChats);
-                    });
-                    searchResultsDiv.appendChild(button);
-                }
-            });
-        } else {
-            searchResultsDiv.innerHTML = '<p>No results found.</p>';
-        }
-    })
-    .catch(error => console.error('Error:', error));
-});
-
+                            // Добавление нового чата в массив сохраненных чатов
+                            savedChats.push(user.username);
+                            // Обновление localStorage
+                            updateLocalStorage('chats', savedChats);
+                        });
+                        searchResultsDiv.appendChild(button);
+                    }
+                });
+            } else {
+                searchResultsDiv.innerHTML = '<p>No results found.</p>';
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
 
     // Восстановление чатов при загрузке страницы
     document.addEventListener('DOMContentLoaded', function() {
@@ -209,67 +210,62 @@
         });
     }
 
-// Обработчик для получения сообщений через WebSocket
-socket.on('receiveMessage', function(data) {
-    const sender = data.sender;
-    const receiver = data.receiver;
-    const message = data.message;
+    // Обработчик для получения сообщений через WebSocket
+    socket.on('receiveMessage', function(data) {
+        const sender = data.sender;
+        const receiver = data.receiver;
+        const message = data.message;
 
-    // Отображаем сообщение только если получатель совпадает с текущим активным чатом
-    if (receiver === '{{ session.username }}') {
-        const messageElement = document.createElement('div');
-        messageElement.textContent = `${sender}: ${message}`;
+        // Отображаем сообщение только если получатель совпадает с текущим активным чатом
+        if (receiver === '{{ session.username }}') {
+            const messageElement = document.createElement('div');
+            messageElement.textContent = `${sender}: ${message}`;
 
-        // Если отправитель совпадает с текущим чатом, обновляем область сообщений
-        if (currentChatUser === sender) {
-            messageArea.appendChild(messageElement);
+            // Если отправитель совпадает с текущим чатом, обновляем область сообщений
+            if (currentChatUser === sender) {
+                messageArea.appendChild(messageElement);
 
-            // Прокручиваем область сообщений вниз, чтобы показать новое сообщение
-            messageArea.scrollTop = messageArea.scrollHeight;
+                // Прокручиваем область сообщений вниз, чтобы показать новое сообщение
+                messageArea.scrollTop = messageArea.scrollHeight;
+            }
+
+            // Сохраняем сообщение в массив сообщений для отправителя и получателя
+            savedMessages[sender] = savedMessages[sender] || [];
+            savedMessages[sender].push(message);
+
+            // Сохраняем обновленные сообщения в localStorage
+            updateLocalStorage('messages', savedMessages);
         }
+    });
 
-        // Сохраняем сообщение в массив сообщений для отправителя и получателя
-        savedMessages[sender] = savedMessages[sender] || [];
-        savedMessages[sender].push(message);
+    // Функция для отправки сообщения
+    function sendMessage() {
+        const message = messageInput.value.trim();
+        if (message === '') return;
+
+        // Создаем новый элемент для отображения отправленного сообщения
+        const messageElement = document.createElement('div');
+        messageElement.textContent = `You: ${message}`;
+        messageArea.appendChild(messageElement);
+
+        // Сохраняем сообщение в массив сообщений для текущего чата
+        savedMessages[currentChatUser] = savedMessages[currentChatUser] || [];
+        savedMessages[currentChatUser].push(message);
 
         // Сохраняем обновленные сообщения в localStorage
         updateLocalStorage('messages', savedMessages);
+
+        // Прокручиваем область сообщений вниз, чтобы показать новое сообщение
+        messageArea.scrollTop = messageArea.scrollHeight;
+
+        // Отправляем сообщение через WebSocket
+        socket.emit('sendMessage', {'sender': '{{ session.username }}', 'receiver': currentChatUser, 'message': message});
+
+        // Очищаем поле ввода сообщения после отправки
+        messageInput.value = '';
     }
-});
-
-
-
-    
-// Функция для отправки сообщения
-function sendMessage() {
-    const message = messageInput.value.trim();
-    if (message === '') return;
-
-    // Создаем новый элемент для отображения отправленного сообщения
-    const messageElement = document.createElement('div');
-    messageElement.textContent = `You: ${message}`;
-    messageArea.appendChild(messageElement);
-
-    // Сохраняем сообщение в массив сообщений для текущего чата
-    savedMessages[currentChatUser] = savedMessages[currentChatUser] || [];
-    savedMessages[currentChatUser].push(message);
-
-    // Сохраняем обновленные сообщения в localStorage
-    updateLocalStorage('messages', savedMessages);
-
-    // Прокручиваем область сообщений вниз, чтобы показать новое сообщение
-    messageArea.scrollTop = messageArea.scrollHeight;
-
-    // Отправляем сообщение через WebSocket
-    socket.emit('sendMessage', {'sender': '{{ session.username }}', 'receiver': currentChatUser, 'message': message});
-
-    // Очищаем поле ввода сообщения после отправки
-    messageInput.value = '';
-}
-
-
-
 </script>
+
 
 
 
