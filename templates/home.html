@@ -29,6 +29,9 @@
                                         </div>
                                     </div>
                                 </button>
+
+                                <!-- <a class="login100-form-btn" href="/logout">Logout</a> -->
+                                <button class="login100-form-btn" onclick="logout()">Logout</button>
                                 
                             </div>
                         </tbody>
@@ -44,7 +47,7 @@
                     <table>
                         <tbody>
                             <div class="login100-form-title p-b-21" id="searchResults"></div>
-                            <div id="chatDiv">
+                            <div>
                                 <p class="Text_Chat_in_Username">UserName</p>
                                 <div class="custom-input">
                                     <input type="text" id="messageInput" placeholder="Text msg">
@@ -85,27 +88,34 @@
         localStorage.setItem(key, JSON.stringify(data));
     };
 
+    
+    function logout() {
+        localStorage.clear();
+        window.location.href = "/logout";
+    }
+
     searchForm.addEventListener('input', function(event) {
-        const searchQuery = searchQueryInput.value;
-        if (searchQuery.trim() === '') {
-            searchResultsDiv.innerHTML = '';
-            chatDiv.style.display = 'block';
-            return;
-        }
-        fetch('/search', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({
-                'search_query': searchQuery
-            }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            searchResultsDiv.innerHTML = '';
-            if (data.users) {
-                data.users.forEach(user => {
+    const searchQuery = searchQueryInput.value;
+    if (searchQuery.trim() === '') {
+        searchResultsDiv.innerHTML = '';
+        chatDiv.style.display = 'block';
+        return;
+    }
+    fetch('/search', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+            'search_query': searchQuery
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        searchResultsDiv.innerHTML = '';
+        if (data.users) {
+            data.users.forEach(user => {
+                if (!savedChats.includes(user.username)) {
                     const button = document.createElement('button');
                     button.textContent = user.username;
                     button.addEventListener('click', function() {
@@ -138,13 +148,15 @@
                         updateLocalStorage('chats', savedChats);
                     });
                     searchResultsDiv.appendChild(button);
-                });
-            } else {
-                searchResultsDiv.innerHTML = '<p>No results found.</p>';
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    });
+                }
+            });
+        } else {
+            searchResultsDiv.innerHTML = '<p>No results found.</p>';
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
+
 
     // Восстановление чатов при загрузке страницы
     document.addEventListener('DOMContentLoaded', function() {
@@ -209,16 +221,12 @@ socket.on('receiveMessage', function(data) {
         // Если отправитель совпадает с текущим чатом, обновляем область сообщений
         if (currentChatUser === sender) {
             messageArea.appendChild(messageElement);
-            
-            // Сохраняем сообщение в массив сообщений для текущего чата
-            savedMessages[sender] = savedMessages[sender] || [];
-            savedMessages[sender].push(message);
 
             // Прокручиваем область сообщений вниз, чтобы показать новое сообщение
             messageArea.scrollTop = messageArea.scrollHeight;
         }
 
-        // Сохраняем сообщение в массив сообщений для отправителя
+        // Сохраняем сообщение в массив сообщений для отправителя и получателя
         savedMessages[sender] = savedMessages[sender] || [];
         savedMessages[sender].push(message);
 
@@ -226,6 +234,7 @@ socket.on('receiveMessage', function(data) {
         updateLocalStorage('messages', savedMessages);
     }
 });
+
 
 
     
@@ -262,6 +271,6 @@ function sendMessage() {
 
 
 
-    
+
     
 {% endblock %}
