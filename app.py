@@ -1,9 +1,43 @@
 from flask import Flask, url_for, render_template, request, redirect, session, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+app.config['SECRET_KEY'] = 'your_secret_key'
+socketio = SocketIO(app)
 db = SQLAlchemy(app)
+
+# Остальной код вашего Flask-приложения здесь...
+
+# Создайте класс модели Message для хранения сообщений в базе данных
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sender = db.Column(db.String(100))
+    receiver = db.Column(db.String(100))
+    message = db.Column(db.String(500))
+
+    def __init__(self, sender, receiver, message):
+        self.sender = sender
+        self.receiver = receiver
+        self.message = message
+
+# Обработчик WebSocket-сообщений для отправки сообщений
+@socketio.on('sendMessage')
+def handle_send_message(data):
+    sender = data['sender']
+    receiver = data['receiver']
+    message = data['message']
+    
+    # Сохраняем сообщение в базе данных
+    new_message = Message(sender=sender, receiver=receiver, message=message)
+    db.session.add(new_message)
+    db.session.commit()
+    
+    # Отправляем сообщение всем подключенным клиентам, включая отправителя и получателя
+    emit('receiveMessage', {'sender': sender, 'receiver': receiver, 'message': message}, broadcast=True)
+
+
 
 
 class User(db.Model):
@@ -82,6 +116,4 @@ if __name__ == '__main__':
     app.secret_key = "ThisIsNotASecret:p"
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
-
-
+    socketio.run(app, debug=True)

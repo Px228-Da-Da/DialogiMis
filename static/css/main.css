@@ -1,26 +1,33 @@
 
+
+
+
+
+
 .scrollingtable {
   box-sizing: border-box;
   display: inline-block;
   vertical-align: middle;
   overflow: hidden;
-  width: auto; /*if you want a fixed width, set it here, else set to auto*/
-  min-width: 0/*100%*/; /*if you want a % width, set it here, else set to 0*/
-  height: 188px/*100%*/; /*set table height here; can be fixed value or %*/
-  min-height: 0/*104px*/; /*if using % height, make this large enough to fit scrollbar arrows + caption + thead*/
+  width: 380px;
+  min-width: 0/*100%*/;
+  /* height: 758px100%; */
+  min-height: 0/*104px*/;
   font-family: Verdana, Tahoma, sans-serif;
-  font-size: 15px;
+  /* font-size: 15px; */
   line-height: 20px;
-  padding: 20px 0 20px 0; /*need enough padding to make room for caption*/
+  padding: 20px 0 20px 0;
   text-align: left;
+  padding-top: revert-layer;
 }
 .scrollingtable * {box-sizing: border-box;}
-.scrollingtable > div {
-  /* position: relative; */
-  /* border-top: 1px solid black; */
+/* .scrollingtable > div {
+  position: relative;
+  border-top: 1px solid black;
   height: 100%;
-  padding-top: 20px; /*this determines column header height*/
-}
+  padding-top: 20px; this determines column header height
+  height: 762px;
+} */
 /* .scrollingtable > div:before {
   top: 0;
   background: cornflowerblue; header row background color
@@ -32,6 +39,8 @@
   overflow: scroll/*auto*/; /*set to auto if using fixed or % width; else scroll*/
   overflow-x: hidden;
   /* border: 1px solid black; border around table body */
+  /* width: 372px; */
+  height: 800px;
 }
 .scrollingtable > div > div:after {background: white;} /*match page background color*/
 .scrollingtable > div > div > table {
@@ -99,20 +108,152 @@
   top: -1px; /*inverse of border width*/
 }
 .scrollingtable > div > div > table > tbody {vertical-align: top;}
-.scrollingtable > div > div > table > tbody > tr {background: white;}
+/* .scrollingtable > div > div > table > tbody > tr {background: white;} */
 /* .scrollingtable > div > div > table > tbody > tr > * { */
   /* border-bottom: 1px solid black; */
   /* padding: 0 6px 0 6px; */
   /* height: 20px; match column header height */
 /* } */
 .scrollingtable > div > div > table > tbody:last-of-type > tr:last-child > * {border-bottom: none;}
-.scrollingtable > div > div > table > tbody > tr:nth-child(even) {background: gainsboro;} /*alternate row color*/
+/* .scrollingtable > div > div > table > tbody > tr:nth-child(even) {background: gainsboro;} alternate row color */
 .scrollingtable > div > div > table > tbody > tr > * + * {border-left: 1px solid black;} /*borders between body cells*/
 
 
 
 
 
+.scrollingtable_msg_field {
+  box-sizing: border-box;
+  display: inline-block;
+  vertical-align: middle;
+  overflow: hidden;
+  width: 380px;
+  min-width: 0/*100%*/;
+  /* height: 758px100%; */
+  min-height: 0/*104px*/;
+  font-family: Verdana, Tahoma, sans-serif;
+  /* font-size: 15px; */
+  line-height: 20px;
+  padding: 20px 0 20px 0;
+  text-align: left;
+  padding-top: revert-layer;
+}
+.scrollingtable_msg_field * {box-sizing: border-box;}
+/* .scrollingtable > div {
+  position: relative;
+  border-top: 1px solid black;
+  height: 100%;
+  padding-top: 20px; this determines column header height
+  height: 762px;
+} */
+/* .scrollingtable > div:before {
+  top: 0;
+  background: cornflowerblue; header row background color
+} */
+
+.scrollingtable_msg_field > div > div {
+  min-height: 0/*43px*/; /*if using % height, make this large enough to fit scrollbar arrows*/
+  max-height: 100%;
+  overflow: scroll/*auto*/; /*set to auto if using fixed or % width; else scroll*/
+  overflow-x: hidden;
+  /* border: 1px solid black; border around table body */
+  /* width: 372px; */
+  height: 800px;
+}
+.scrollingtable_msg_field > div > div:after {background: white;} /*match page background color*/
+.scrollingtable_msg_field > div > div > table {
+  width: 100%;
+  border-spacing: 0;
+  margin-top: -20px; /*inverse of column header height  */
+  /*margin-right: 17px;*/ /*uncomment if using % width*/
+}
+.scrollingtable_msg_field > div > div > table > caption {
+  position: absolute;
+  top: -20px; /*inverse of caption height*/
+  margin-top: -1px; /*inverse of border-width*/
+  width: 100%;
+  font-weight: bold;
+  text-align: center;
+}
+.scrollingtable_msg_field > div > div > table > * > tr > * {padding: 0;}
+.scrollingtable_msg_field > div > div > table > thead {
+  vertical-align: bottom;
+  white-space: nowrap;
+  text-align: center;
+}
+.scrollingtable_msg_field > div > div > table > thead > tr > * > div {
+  display: inline-block;
+  padding: 0 6px 0 6px; /*header cell padding*/
+}
+.scrollingtable_msg_field > div > div > table > thead > tr > :first-child:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 20px; /*match column header height*/
+  border-left: 1px solid black; /*leftmost header border*/
+}
+.scrollingtable_msg_field > div > div > table > thead > tr > * > div[label]:before,
+.scrollingtable_msg_field > div > div > table > thead > tr > * > div > div:first-child,
+.scrollingtable_msg_field > div > div > table > thead > tr > * + :before {
+  position: absolute;
+  top: 0;
+  white-space: pre-wrap;
+  color: white; /*header row font color*/
+}
+.scrollingtable_msg_field > div > div > table > thead > tr > * > div[label]:before,
+.scrollingtable_msg_field > div > div > table > thead > tr > * > div[label]:after {content: attr(label);}
+.scrollingtable_msg_field > div > div > table > thead > tr > * + :before {
+  content: "";
+  display: block;
+  min-height: 20px; /*match column header height*/
+  padding-top: 1px;
+  border-left: 1px solid black; /*borders between header cells*/
+}
+.scrollingtable_msg_field .scrollbarhead {float: right;}
+.scrollingtable_msg_field .scrollbarhead:before {
+  position: absolute;
+  width: 100px;
+  top: -1px; /*inverse border-width*/
+  background: white; /*match page background color*/
+}
+.scrollingtable_msg_field > div > div > table > tbody > tr:after {
+  content: "";
+  display: table-cell;
+  position: relative;
+  padding: 0;
+  /* border-top: 1px solid black; */
+  top: -1px; /*inverse of border width*/
+}
+.scrollingtable_msg_field > div > div > table > tbody {vertical-align: top;}
+/* .scrollingtable > div > div > table > tbody > tr {background: white;} */
+/* .scrollingtable > div > div > table > tbody > tr > * { */
+  /* border-bottom: 1px solid black; */
+  /* padding: 0 6px 0 6px; */
+  /* height: 20px; match column header height */
+/* } */
+.scrollingtable_msg_field > div > div > table > tbody:last-of-type > tr:last-child > * {border-bottom: none;}
+/* .scrollingtable > div > div > table > tbody > tr:nth-child(even) {background: gainsboro;} alternate row color */
+.scrollingtable_msg_field > div > div > table > tbody > tr > * + * {border-left: 1px solid black;} /*borders between body cells*/
+
+
+.container {
+  display: flex; /* Делаем контейнер флекс-контейнером */
+}
+
+.scrollingtable_msg_field,
+.scrollingtable_msg_field {
+  flex: 1; /* Растягиваем каждый контейнер, чтобы занять все доступное пространство */
+  margin-right: 20px; /* Добавляем немного отступа между контейнерами */
+}
+
+.scrollingtable_msg_field,
+.scrollingtable_msg_field table {
+  /* width: 100%; */
+    margin-top: -883px;
+    margin-left: 507px;
+    position: absolute;
+}
 
 
 
@@ -285,6 +426,50 @@ iframe {
   margin-left: 10px;
 }
 
+.wrap-Chat_Favorite {
+  width: 351px;
+  height: 80px;
+  background: #625F5F;
+  border-radius: 19px;
+  position: relative;
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+.Text_ChatUsername {
+  color: #B8B8C6;
+  font-size: 20px;
+  margin-left: -6px;
+  margin-top: -15px;
+  font-weight: bold;
+}
+
+.Text_Chat_in_Username {
+  color: #2f2fcf;
+  font-size: 20px;
+  margin-left: 0px;
+  margin-top: -15px;
+  font-weight: bold;
+}
+
+.wrap-kolo {
+  width: 60px;
+  background: #E58383;
+  border-radius: 586px;
+  margin-top: 0px;
+    margin-left: 8px;
+}
+
+
+/* :root {
+  --square-size: 200px;
+} */
+
+/* .block {
+  position: absolute;
+  box-sizing: border-box;
+} */
+
 /*==================================================================
 [ Form ]*/
 
@@ -297,7 +482,7 @@ iframe {
   font-size: 30px;
   color: #403866;
   line-height: 1.2;
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
   text-align: center;
 
   width: 100%;
@@ -330,7 +515,7 @@ body, html {
   outline: none;
   background-color: #BFB7B7;
   color: #8F8FA1;
-  font-size: 20px;
+  font-size: 25px;
   margin-left: 40px;
 }
 
