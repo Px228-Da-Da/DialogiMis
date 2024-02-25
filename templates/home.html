@@ -56,7 +56,10 @@
                                     <button onclick="sendMessage()">Send</button>
                                 </div>
                             </div>
-                            <div id="messageArea"></div>
+                            <!-- Ваш HTML код для области чата -->
+                            <!-- <div id="messageArea" class="message-area"></div> -->
+                            <div class="message-area" id="messageArea">
+                            </div>
                         </tbody>
                     </table>
                 </div>
@@ -88,6 +91,54 @@
     const updateLocalStorage = (key, data) => {
         localStorage.setItem(key, JSON.stringify(data));
     };
+
+    function createChatElement(username) {
+        const chatElement = document.createElement('div');
+        chatElement.classList.add('limiter');
+        chatElement.innerHTML = `
+            <button class="chat-button" onclick="handleChatButtonClick('${username}')">
+                <div class="limiter">
+                    <div>
+                        <div class="wrap-Chat_Favorite p-t-10 p-b-50">
+                            <div class="container-login100-form-btn block">
+                                <div class="wrap-kolo p-t-10 p-b-50">
+                                </div>
+                                <p class="Text_ChatUsername">${username}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </button>
+        `;
+        return chatElement;
+    }
+
+    function createMessageElement(sender, message, time) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', sender === '{{ session.username }}' ? 'outgoing-message' : 'outgoing-message');
+        
+        const usernameElement = document.createElement('div');
+        usernameElement.classList.add('Text_msg_Username');
+        usernameElement.textContent = sender;
+        
+        const timeElement = document.createElement('div');
+        timeElement.classList.add('message-time');
+        timeElement.textContent = time;
+        
+        const textElement = document.createElement('div');
+        textElement.classList.add('text');
+        textElement.textContent = message;
+        
+        messageElement.appendChild(usernameElement);
+        messageElement.appendChild(timeElement);
+        messageElement.appendChild(textElement);
+
+        return messageElement;
+    }
+
+
+
+
 
     function logout() {
         localStorage.clear();
@@ -187,8 +238,7 @@
         // Восстановление сообщений для текущего чата при загрузке страницы
         const currentChatMessages = savedMessages[currentChatUser] || [];
         currentChatMessages.forEach(msg => {
-            const messageElement = document.createElement('div');
-            messageElement.textContent = `${currentChatUser}: ${msg}`;
+            const messageElement = createMessageElement('{{ session.username }}', msg);
             messageArea.appendChild(messageElement);
         });
     });
@@ -204,8 +254,11 @@
         // Восстанавливаем сообщения для выбранного чата из localStorage
         const currentChatMessages = savedMessages[currentChatUser] || [];
         currentChatMessages.forEach(msg => {
-            const messageElement = document.createElement('div');
-            messageElement.textContent = `${currentChatUser}: ${msg}`;
+            // const messageElement = document.createElement('div');
+            // messageElement.textContent = `${currentChatUser}: ${msg}`;
+            // messageArea.appendChild(messageElement);
+
+            const messageElement = createMessageElement('{{ session.username }}', msg);
             messageArea.appendChild(messageElement);
         });
     }
@@ -218,8 +271,9 @@
 
         // Отображаем сообщение только если получатель совпадает с текущим активным чатом
         if (receiver === '{{ session.username }}') {
-            const messageElement = document.createElement('div');
-            messageElement.textContent = `${sender}: ${message}`;
+
+            const messageElement = createMessageElement(sender, message);
+            messageArea.appendChild(messageElement);
 
             // Если отправитель совпадает с текущим чатом, обновляем область сообщений
             if (currentChatUser === sender) {
@@ -244,8 +298,7 @@
         if (message === '') return;
 
         // Создаем новый элемент для отображения отправленного сообщения
-        const messageElement = document.createElement('div');
-        messageElement.textContent = `You: ${message}`;
+        const messageElement = createMessageElement('{{ session.username }}', message);
         messageArea.appendChild(messageElement);
 
         // Сохраняем сообщение в массив сообщений для текущего чата
@@ -264,6 +317,8 @@
         // Очищаем поле ввода сообщения после отправки
         messageInput.value = '';
     }
+
+
 </script>
 
 

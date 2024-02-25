@@ -1,12 +1,102 @@
+
+<style>
+    body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.chat-container {
+  max-width: 400px;
+  margin: 20px auto;
+}
+
+.chat-message {
+  border-radius: 10px;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  max-width: 70%;
+}
+
+.outgoing {
+  background-color: #DCF8C6;
+  align-self: flex-end;
+}
+
+.incoming {
+  background-color: #ECE5DD;
+}
+
+.message {
+  word-wrap: break-word;
+}
+
+.time {
+  font-size: 12px;
+  color: #888;
+}
+
+</style>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Page</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Viber Style Chat</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Welcome to the Chat Page!</h1>
-    <!-- Здесь вы можете добавить разметку для вашей страницы чата -->
+<div class="chat-container">
+  <div id="messageArea1" class="chat-message outgoing">
+    <div class="pipette">&#128198;</div>
+    <div class="message">Привет! Как дела?</div>
+    <div class="time">10:00</div>
+  </div>
+  <div id="messageArea2" class="chat-message outgoing">
+    <div class="pipette">&#128198;</div>
+    <div class="message">Еще одно сообщение.</div>
+    <div class="time">10:05</div>
+  </div>
+</div>
+<script src="script.js"></script>
 </body>
 </html>
+
+
+<script>
+    // Генерация уникального идентификатора
+function generateUniqueId() {
+  return 'messageArea' + Date.now();
+}
+
+// Создание нового исходящего сообщения
+function createOutgoingMessage(messageText) {
+  const messageId = generateUniqueId();
+  const messageContainer = document.createElement('div');
+  messageContainer.id = messageId;
+  messageContainer.classList.add('chat-message', 'outgoing');
+
+  const pipette = document.createElement('div');
+  pipette.classList.add('pipette');
+  pipette.innerHTML = '&#128198;';
+
+  const message = document.createElement('div');
+  message.classList.add('message');
+  message.textContent = messageText;
+
+  const time = document.createElement('div');
+  time.classList.add('time');
+  const currentTime = new Date();
+  time.textContent = currentTime.getHours() + ':' + currentTime.getMinutes();
+
+  messageContainer.appendChild(pipette);
+  messageContainer.appendChild(message);
+  messageContainer.appendChild(time);
+
+  document.querySelector('.chat-container').appendChild(messageContainer);
+}
+
+// Использование функции для создания нового сообщения
+createOutgoingMessage('Еще однh');
+
+</script>
