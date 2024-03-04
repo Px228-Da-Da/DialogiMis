@@ -1,0 +1,18 @@
+{
+  "name": "msgvirm",
+  "version": "1.0.0",
+  "description": "msg test js",
+  "main": "test.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "Px228",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^28.2.2"
+  },
+  "dependencies": {
+    "axios": "^1.6.7",
+    "sqlite3": "^5.1.7"
+  }
+}

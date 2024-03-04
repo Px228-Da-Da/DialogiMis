@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+    <form action="{{ url_for('search') }}" method="post">
+        <input type="text" name="search_query" placeholder="Search by username">
+        <button type="submit">Search</button>
+    </form>
+    {% if users %}
+        <h2>Search Results for "{{ search_query }}"</h2>
+        <ul>
+            {% for user in users %}
+                <li>{{ user.username }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

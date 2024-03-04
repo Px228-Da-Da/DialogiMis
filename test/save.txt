@@ -1,0 +1,177 @@
+// const searchForm = document.getElementById('searchForm');
+        // const searchQueryInput = document.getElementById('searchQuery');
+        // const searchResultsDiv = document.getElementById('searchResults');
+        // const chatDiv = document.querySelector('.wrap-Chat_Favorite');
+
+        // searchQueryInput.addEventListener('input', function(event) {
+        //     const searchQuery = searchQueryInput.value;
+        //     if (searchQuery.trim() === '') {
+        //         searchResultsDiv.innerHTML = ''; // Clear search results if search query is empty
+        //         chatDiv.style.display = 'block'; // Show the chat div
+        //         return;
+        //     }
+        //     fetch('/search', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/x-www-form-urlencoded',
+        //         },
+        //         body: new URLSearchParams({
+        //             'search_query': searchQuery
+        //         }),
+        //     })
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         searchResultsDiv.innerHTML = ''; // Clear previous results
+        //         if (data.users) {
+        //             const userList = data.users.map(user => `<li>${user.username}</li>`).join('');
+        //             searchResultsDiv.innerHTML = `<ul>${userList}</ul>`;
+        //             chatDiv.style.display = 'none'; // Hide the chat div
+        //         } else {
+        //             searchResultsDiv.innerHTML = '<p>No results found.</p>';
+        //             chatDiv.style.display = 'block'; // Show the chat div
+        //         }
+        //     })
+        //     .catch(error => console.error('Error:', error));
+        // });
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+
+        // const searchForm = document.getElementById('searchForm');
+        // const searchQueryInput = document.getElementById('searchQuery');
+        // const searchResultsDiv = document.getElementById('searchResults');
+        // const chatDiv = document.getElementById('chatDiv');
+
+        // searchForm.addEventListener('input', function(event) {
+        //     const searchQuery = searchQueryInput.value;
+        //     if (searchQuery.trim() === '') {
+        //         searchResultsDiv.innerHTML = ''; // Clear search results if search query is empty
+        //         chatDiv.style.display = 'block'; // Show the chat div
+        //         return;
+        //     }
+        //     fetch('/search', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/x-www-form-urlencoded',
+        //         },
+        //         body: new URLSearchParams({
+        //             'search_query': searchQuery
+        //         }),
+        //     })
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         searchResultsDiv.innerHTML = ''; // Clear previous results
+        //         if (data.users) {
+        //             data.users.forEach(user => {
+        //                 const button = document.createElement('button');
+        //                 button.textContent = user.username;
+        //                 button.addEventListener('click', function() {
+        //                     // Logic to create a new chat with the selected user
+        //                     const chatElement = document.createElement('div');
+        //                     chatElement.classList.add('limiter');
+        //                     chatElement.innerHTML = `
+                                
+        //                         <div class="limiter">
+        //                             <div>
+        //                                 <div class="wrap-Chat_Favorite p-t-10 p-b-50">
+        //                                     <div class="container-login100-form-btn block">
+        //                                         <div class="wrap-kolo p-t-10 p-b-50">
+        //                                         </div>
+        //                                         <p class="Text_ChatUsername">${user.username}</p>
+                                                
+        //                                     </div>
+        //                                 </div>
+        //                             </div>
+        //                         </div>
+        //                     `;
+        //                     chatDiv.appendChild(chatElement);
+        //                 });
+        //                 searchResultsDiv.appendChild(button);
+        //             });
+        //         } else {
+        //             searchResultsDiv.innerHTML = '<p>No results found.</p>';
+        //         }
+        //     })
+        //     .catch(error => console.error('Error:', error));
+        // });
+
+
+
+
+
+    <!-- <div class="limiter">
+        <div class="container-login100">
+            <div class="wrap-Chat_Favorite p-t-10 p-b-50">
+                <div class="container-login100-form-btn block">
+                    <div class="wrap-kolo p-t-10 p-b-50">
+                    </div>
+                    <p class="Text_ChatUsername">{{ session.username }}</p>
+                    
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    
+
+
+    
+
+    <!-- <div class="limiter">
+        <div class="container-login100">
+            <div class="wrap-login100 p-t-50 p-b-90">
+                <span class="login100-form-title p-b-51">
+                    Welcome {{ session.username }}!!
+                </span>
+                <div class="container-login100-form-btn m-t-17">
+                    <button class="login100-form-btn">
+                        <a class="login100-form-btn" href="/logout">Logout</a>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+
+
+
+
+    
+    <!-- <div class="limiter">
+        <div class="container-login100 wrap-login101">
+            <form class="login100-form-title" id="searchForm">
+                <div class="custom-input">
+                    <input type="text" id="searchQuery" name="search_query" placeholder="Search by username">
+                </div>
+            </form>
+            
+            <div class="scrollingtable">
+                <div>
+                  <div>
+                    <table>
+                      <tbody>
+                        <div class="login100-form-title p-b-21" id="searchResults"></div>
+
+
+                        <div class="limiter">
+                            <div>
+                                <div class="wrap-Chat_Favorite p-t-10 p-b-50">
+                                    <div class="container-login100-form-btn block">
+                                        <div class="wrap-kolo p-t-10 p-b-50">
+                                        </div>
+                                        <p class="Text_ChatUsername">{{ session.username }}</p>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+
+
+        </div>
+    </div> -->

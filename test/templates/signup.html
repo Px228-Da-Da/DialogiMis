@@ -1,0 +1,48 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+</head>
+<body>
+    <form id="signup-form">
+        <div id="message">Signup</div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="button" onclick="signup()">Signup</button>
+    </form>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        
+        var message = document.getElementById('message');
+        
+
+        function signup() {
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+            
+            socket.emit('signup', { email: email, password: password });
+        }
+
+        socket.on('email_verified', function() {
+            message.innerHTML = 'Email подтвержден успешно.';
+        });
+
+        socket.on('email_not_verified', function() {
+            message.innerHTML = 'Email еще не подтвержден. Ожидание...';
+        });
+
+        socket.on('email_verification_error', function(error) {
+            message.innerHTML = 'Ошибка подтверждения email: ' + error;
+        });
+    </script>
+</body>
+</html>
