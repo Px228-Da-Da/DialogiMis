@@ -143,9 +143,15 @@ async def wait_for_email_verification(sid, email, password, username):
         except Exception as e:
             socketio.emit('email_verification_error', str(e), room=sid)
             break
-        await asyncio.sleep(5)  # Указываете время задержки в секундах
+        await asyncio.sleep(0.5)  # Указываете время задержки в секундах
 
 
+@app.route('/email_verified')
+def email_verified():
+    if session.get('logged_in'):
+        return redirect(url_for('home'))
+    else:
+        return redirect(url_for('login'))  # Или любую другую страницу, если пользователь не вошел в систему
 
 
 @app.route('/login/', methods=['GET', 'POST'])
