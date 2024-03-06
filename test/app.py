@@ -241,10 +241,35 @@ def logout():
     session.pop('idToken', None)  # Remove the ID token from the session
     return redirect(url_for('index'))
 
+# @app.route('/search', methods=['POST'])
+# def search():
+#     if request.method == 'POST':
+#         search_query = request.form.get('search_query')
+        
+#         # Выполняем поиск пользователей в базе данных Firebase
+#         users = []
+#         try:
+#             # Получаем данные пользователей из Firebase
+#             firebase_users = db.child("users").get().val()
+            
+#             # Перебираем пользователей и добавляем их в список, если их имя соответствует запросу
+#             if firebase_users:
+#                 for user_id, user_data in firebase_users.items():
+#                     if 'username' in user_data and search_query.lower() in user_data['username'].lower():
+#                         users.append({'username': user_data['username']})
+#         except Exception as e:
+#             # Обработка ошибок при запросе к базе данных Firebase
+#             return jsonify({'message': 'Error occurred while searching users'}), 500
+        
+#         return jsonify({'users': users})
+#     return jsonify({'message': 'Method not allowed'})
+
+
 @app.route('/search', methods=['POST'])
 def search():
     if request.method == 'POST':
         search_query = request.form.get('search_query')
+        current_user_username = session.get('username')
         
         # Выполняем поиск пользователей в базе данных Firebase
         users = []
@@ -256,13 +281,16 @@ def search():
             if firebase_users:
                 for user_id, user_data in firebase_users.items():
                     if 'username' in user_data and search_query.lower() in user_data['username'].lower():
-                        users.append({'username': user_data['username']})
+                        # Проверяем, не является ли найденный пользователь текущим пользователем
+                        if current_user_username != user_data['username']:
+                            users.append({'username': user_data['username']})
         except Exception as e:
             # Обработка ошибок при запросе к базе данных Firebase
             return jsonify({'message': 'Error occurred while searching users'}), 500
         
         return jsonify({'users': users})
     return jsonify({'message': 'Method not allowed'})
+
 
 
 if __name__ == '__main__':
