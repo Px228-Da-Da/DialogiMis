@@ -14,6 +14,8 @@
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='vendor/daterangepicker/daterangepicker.css')}}">
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/util.css')}}">
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css')}}">
+
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/toast.min.css')}}">
 </head>
 <body>
 {% block content %}{% endblock %}
@@ -26,6 +28,10 @@
 	<script src="{{ url_for('static', filename='vendor/daterangepicker/daterangepicker.js')}}"></script>
 	<script src="{{ url_for('static', filename='vendor/countdowntime/countdowntime.js')}}"></script>
 	<script src="{{ url_for('static', filename='js/main.js')}}"></script>
+	<script src="{{ url_for('static', filename='js/toast.min.js')}}"></script>
+
+	
+	<script src="{{ url_for('static', filename='js/toast.min.js')}}"></script>
 	<script>
 	window.addEventListener("mousewheel", function(e) {
 		if (e.ctrlKey) {

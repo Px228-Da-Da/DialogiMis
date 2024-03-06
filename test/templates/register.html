@@ -4,35 +4,35 @@
     <div class="container-login100">
         <div class="wrap-login100 p-t-50 p-b-90">
             <span class="login100-form-title p-b-51">
-                Register
+                Зареєструватися
             </span>
-            <div id="message"  class="login100-form-title p-b-51">Confirm your email address</div>
-            <form id="registerForm" action="/add_user" method="post" class="login100-form validate-form flex-sb flex-w" method="POST" action="/register">
+            <div id="message" class="login100-form-title p-b-51">Підтвердіть Вашу електронну адресу</div>
+            <div id="if_user_email" class="login100-form-title"></div>
+            <form  class="login100-form validate-form flex-sb flex-w" id="registerForm" method="post" method="POST" action="/register">
                 <form id="frrfr">
-                    <div class="wrap-input100 validate-input m-b-16" data-validate="Email is required">
-                        <input class="input100" type="email" name="email" id="email" placeholder="Email" required>
+                    <div class="wrap-input100 validate-input m-b-16" data-validate="Необхідно вказати Email пошти">
+                        <input class="input100" type="email" name="email" id="email" placeholder="Email">
                         <span class="focus-input100"></span>
                     </div>
                     <!-- Добавьте поле ввода для имени пользователя -->
-                    <div class="wrap-input100 validate-input m-b-16" data-validate="Username is required">
-                        <input class="input100" type="text" name="username" id="username" placeholder="Username" required>
+                    <div class="wrap-input100 validate-input m-b-16" data-validate="Необхідно вказати Ім'я користувача">
+                        <input class="input100" type="text" name="username" id="username" placeholder="Ім'я користувача">
                         <span class="focus-input100"></span>
                     </div>
-                    
-                    <div class="wrap-input100 validate-input m-b-16" data-validate="Password is required">
-                        <input class="input100" type="password" name="password" id="password" placeholder="Password" required>
+                    <div class="wrap-input100 validate-input m-b-16" data-validate="Необхідно вказати Пароль">
+                        <input class="input100" type="password" name="password" id="password" placeholder="Пароль">
                         <span class="focus-input100"></span>
                     </div>
                     <div class="flex-sb-m w-full p-t-3 p-b-24">
                         <div>
                             <a href="{{url_for('login')}}" class="txt1">
-                                Log In
+                                Увійти
                             </a>
                         </div>
                     </div>
                     <div class="container-login100-form-btn m-t-17">
                         <button class="login100-form-btn" type="submit">
-                            Register
+                            Зареєструватися
                         </button>
                         
                     </div>
@@ -43,8 +43,8 @@
 </div>
 
 
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<!-- <script src="/examples/libs/toast/toast.min.js"></script> -->
 <script>
     var socket = io.connect('http://' + document.domain + ':' + location.port);
     
@@ -66,19 +66,77 @@
         socket.emit('signup', { email: email, password: password, username: username });
     });
 
+    // socket.on('email_verified', function() {
+    //     message.innerHTML = 'Email confirmed successfully..';
+    // });
+    
     socket.on('email_verified', function() {
-        message.innerHTML = 'Email confirmed successfully..';
+        message.innerHTML = 'Електронну пошту успішно підтверджено..';
+        // Отправляем запрос на обновление сессии после успешного подтверждения email
+        fetch('/update_session', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ logged_in: true }),
+        })
+        .then(response => {
+            if (response.ok) {
+                // Перенаправляем пользователя на главную страницу после обновления сессии
+                window.location.href = '/';
+            } else {
+                throw new Error('Не вдалося оновити сеанс');
+            }
+        })
+        .catch(error => {
+            console.error('Помилка оновлення сеансу:', error);
+            // Обработка ошибки обновления сессии
+        });
     });
+
 
     socket.on('email_not_verified', function() {
         formElement.style.display = "none";
         message.style.display = "block";
-        message.innerHTML = 'Confirm your email address';
+        message.innerHTML = 'Підтвердіть Вашу електронну адресу';
     });
 
     socket.on('email_verification_error', function(error) {
-        message.innerHTML = 'Ошибка подтверждения email: ' + error;
+        console.log(error);
+        var errorMessage;
+        try {
+            var errorData = JSON.parse(error);
+            if (error.code === 400 && error.message === 'EMAIL_EXISTS') {
+                errorMessage = "Ця електронна адреса вже зареєстрована."; // Заменяем сообщение об ошибке
+            } else {
+                errorMessage = "Під час перевірки електронної пошти сталася помилка: " + errorData.error.message;
+            }
+        } catch (e) {
+            // Если сообщение не удалось распарсить как JSON
+            if (error.includes('INVALID_EMAIL')) {
+                // Не показывать Toast для ошибки INVALID_EMAIL
+                return;
+            }
+            errorMessage = "Ця електронна адреса вже зареєстрована.";
+        }
+        
+        new Toast({
+            title: "Error",
+            text: errorMessage,
+            theme: "danger",
+            autohide: 1000,
+            interval: 5000
+        });
     });
+
+
+
+
+
+
+
+
 </script>
 
 

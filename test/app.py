@@ -48,12 +48,12 @@ def handle_send_message(data):
     message = data['message']
     
     # Сохраняем сообщение в базе данных Firebase
-    message_data = {
-        'sender': sender,
-        'receiver': receiver,
-        'message': message
-    }
-    db.child('messages').push(message_data)
+    # message_data = {
+    #     'sender': sender,
+    #     'receiver': receiver,
+    #     'message': message
+    # }
+    # db.child('messages').push(message_data)
 
     # Отправляем сообщение всем подключенным клиентам, включая отправителя и получателя
     emit('receiveMessage', {'sender': sender, 'receiver': receiver, 'message': message}, broadcast=True)
@@ -112,6 +112,7 @@ def register():
             loop.run_until_complete(wait_for_email_verification(request.sid, email, password, username))
 
             # Возвращаем пользователя на главную страницу после успешной регистрации
+            session['logged_in'] = True
             return redirect(url_for('index'))
         except Exception as e:
             # Если произошла ошибка, возвращаем пользователя на страницу регистрации с сообщением об ошибке
@@ -136,14 +137,93 @@ async def wait_for_email_verification(sid, email, password, username):
                     "password": password,
                     "username": username
                 })
+                print("email_verified")
+                session['email'] = email  # Store the email in the session
+                session['username'] = username
                 session['logged_in'] = True
+                session['idToken'] = user['idToken']  # Store the ID token in the session
                 return redirect(url_for('index'))
             else:
                 socketio.emit('email_not_verified', room=sid)
         except Exception as e:
             socketio.emit('email_verification_error', str(e), room=sid)
             break
-        await asyncio.sleep(0.5)  # Указываете время задержки в секундах
+        await asyncio.sleep(0.05)  # Указываете время задержки в секундах
+
+@app.route('/update_session', methods=['POST'])
+def update_session():
+    if request.method == 'POST':
+        data = request.json
+        logged_in = data.get('logged_in')
+        if logged_in:
+            session['logged_in'] = True
+            return jsonify({'message': 'Session updated successfully'}), 200
+        else:
+            return jsonify({'message': 'Failed to update session'}), 400
+    else:
+        return jsonify({'message': 'Method not allowed'}), 405
+
+
+
+
+
+def process_login_error(error_data):
+    try:
+        if 'code' in error_data and 'message' in error_data:
+            if error_data['code'] == 400:
+                if error_data['message'] == 'INVALID_LOGIN_CREDENTIALS':
+                    return "Неправильний email або пароль."
+                # Добавьте другие условия для обработки разных ошибок при входе в систему
+            return "Під час входу в систему виникла помилка: {}".format(error_data['message'])
+    except Exception:
+        pass
+    return "Виникла помилка при вході в систему."
+
+
+
+
+
+@app.route('/login/', methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        try:
+            email = request.form['email']
+            password = request.form['password']
+            
+            # Проверяем, существует ли пользователь с указанным email и паролем
+            user = auth.sign_in_with_email_and_password(email, password)
+            
+            # Получаем информацию о пользователе, включая его имя (username)
+            user_info = db.child('users').child(user['localId']).get().val()
+            username = user_info.get('username')
+            
+            # Если пользователь существует, сохраняем информацию о сессии и перенаправляем на главную страницу
+            session['email'] = email  # Сохраняем email в сессии
+            session['username'] = username  # Сохраняем имя пользователя в сессии
+            session['logged_in'] = True
+            session['idToken'] = user['idToken']  # Сохраняем ID токен в сессии
+            return redirect(url_for('index'))
+        except HTTPError as e:
+            if e.response is not None:
+                try:
+                    error_message = e.response.json().get('error', {}).get('message', '')
+                    if error_message == 'EMAIL_NOT_FOUND':
+                        error = "Пользователь с таким email не найден"
+                    elif error_message == 'INVALID_PASSWORD':
+                        error = "Неверный пароль"
+                    elif error_message == 'TOO_MANY_ATTEMPTS_TRY_LATER ':
+                        error = "Учетная запись пользователя отключена"
+                    else:
+                        error = "Ошибка при входе в систему"
+                except Exception as e:
+                    error = "Ошибка при входе в систему"
+            else:
+                error = "Пользователь с таким email не найден ИЛИ Неверный пароль Учетная запись временно отключена из-за множества неудачных попыток входа"
+    return render_template('login.html', error=error)
+
+
+
 
 
 @app.route('/email_verified')
@@ -153,23 +233,6 @@ def email_verified():
     else:
         return redirect(url_for('login'))  # Или любую другую страницу, если пользователь не вошел в систему
 
-
-@app.route('/login/', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        try:
-            email = request.form['email']
-            password = request.form['password']
-            user = auth.sign_in_with_email_and_password(email, password)
-            session['email'] = email  # Store the email in the session
-            session['logged_in'] = True
-            session['idToken'] = user['idToken']  # Store the ID token in the session
-            return redirect(url_for('index'))
-        except Exception as e:
-            error_message = e.args[1]
-            return render_template('index.html', message=error_message)
-    else:
-        return render_template('login.html')
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
@@ -182,62 +245,27 @@ def logout():
 def search():
     if request.method == 'POST':
         search_query = request.form.get('search_query')
-        users = User.query.filter(User.username.ilike(f'%{search_query}%')).all()
-        user_list = [{'username': user.username} for user in users]
-        return jsonify({'users': user_list})
+        
+        # Выполняем поиск пользователей в базе данных Firebase
+        users = []
+        try:
+            # Получаем данные пользователей из Firebase
+            firebase_users = db.child("users").get().val()
+            
+            # Перебираем пользователей и добавляем их в список, если их имя соответствует запросу
+            if firebase_users:
+                for user_id, user_data in firebase_users.items():
+                    if 'username' in user_data and search_query.lower() in user_data['username'].lower():
+                        users.append({'username': user_data['username']})
+        except Exception as e:
+            # Обработка ошибок при запросе к базе данных Firebase
+            return jsonify({'message': 'Error occurred while searching users'}), 500
+        
+        return jsonify({'users': users})
     return jsonify({'message': 'Method not allowed'})
+
 
 if __name__ == '__main__':
     app.secret_key = "ThisIsNotASecret:p"
     socketio.run(app, debug=True, host='0.0.0.0', port=5000)
 
-
-
-# from flask import Flask, render_template, request
-
-
-# app = Flask(__name__)
-# app.config['SECRET_KEY'] = 'your_secret_key'  # Замените 'your_secret_key' на ваш секретный ключ Flask
-# socketio = SocketIO(app)
-
-# firebase = pyrebase.initialize_app(config)
-# auth = firebase.auth()
-
-# async def wait_for_email_verification(sid, user):
-#     while True:
-#         try:
-#             user_info = auth.get_account_info(user['idToken'])
-#             email_verified = user_info['users'][0]['emailVerified']
-#             if email_verified:
-#                 socketio.emit('email_verified', room=sid)
-#                 break
-#             else:
-#                 socketio.emit('email_not_verified', room=sid)
-#         except Exception as e:
-#             socketio.emit('email_verification_error', str(e), room=sid)
-#             break
-#         await asyncio.sleep(5)  # Проверяем каждые 5 секунд
-
-# @app.route('/')
-# def index():
-#     return render_template('signup.html')
-
-# @socketio.on('signup')
-# def handle_signup(data):
-#     email = data['email']
-#     password = data['password']
-
-#     try:
-#         user = auth.create_user_with_email_and_password(email, password)
-#         auth.send_email_verification(user['idToken'])
-#         flash('Регистрация успешна! Подтвердите свой email.')
-
-#         loop = asyncio.new_event_loop()
-#         asyncio.set_event_loop(loop)
-#         loop.run_until_complete(wait_for_email_verification(request.sid, user))
-
-#     except Exception as e:
-#         socketio.emit('registration_error', str(e), room=request.sid)
-
-# if __name__ == '__main__':
-#     socketio.run(app, debug=True)
