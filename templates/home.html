@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="limiter">
-    <div class="container-login100 wrap-login101">
+    <div class="container-login100 wrap-login101 fullscreen-div">
         <form class="login100-form-title" id="searchForm">
             <div class="custom-input">
                 <input type="text" id="searchQuery" name="search_query" placeholder="Search by username">
@@ -22,9 +22,9 @@
                                         <div>
                                             <div class="wrap-Chat_Favorite p-t-10 p-b-50">
                                                 <div class="container-login100-form-btn block">
-                                                    <div class="wrap-kolo p-t-10 p-b-50">
+                                                    <div class="wrap-favorite p-t-10 p-b-50">
                                                     </div>
-                                                    <p class="Text_ChatUsername">favorites</p>
+                                                    <p class="Text_ChatUsername_fv">favorites</p>
                                                     <!-- <p class="Text_ChatUsername">{{ session.username }}</p> -->
                                                 </div>
                                             </div>
@@ -33,7 +33,7 @@
                                 </button>
 
                                 <!-- <a class="login100-form-btn" href="/logout">Logout</a> -->
-                                <button class="login100-form-btn" onclick="logout()">Logout</button>
+                                <!-- <button class="login100-form-btn" onclick="logout()">Logout</button> -->
                                 
                             </div>
                         </tbody>
@@ -41,9 +41,11 @@
                 </div>
             </div>
         </div>
-
+        
+        <div class="tisi"><p class="Text_Chat_in_Username">UserName</p></div>
 
         <div class="scrollingtable_msg_field">
+            
             <div>
                 <div>
                     <table>
@@ -52,7 +54,7 @@
                             <!-- <div class="fixed-block"></div> -->
                                 <!-- <div class="scroll"></div> -->
                             <div>
-                                <p class="Text_Chat_in_Username">UserName</p>
+                                <!-- <p class="Text_Chat_in_Username">UserName</p> -->
                                 <div class="custom-input fixed-block">
                                     <input class="input_s" type="text" id="messageInput" placeholder="Text msg">
                                     <button class="bt" onclick="sendMessage()">Send</button>
@@ -76,7 +78,7 @@
     const searchQueryInput = document.getElementById('searchQuery');
     const searchResultsDiv = document.getElementById('searchResults');
     const chatDiv = document.getElementById('chatDiv');
-    const msgField = document.querySelector('.scrollingtable_msg_field p');
+    const msgField = document.querySelector('.tisi p');
     const messageInput = document.getElementById('messageInput');
     const messageArea = document.getElementById('messageArea');
 
@@ -177,7 +179,7 @@
                         button.textContent = user.username;
                         button.addEventListener('click', function() {
                             // Обновление текста в элементе <p> при нажатии на кнопку чата
-                            msgField.textContent = `Chat with ${user.username}`;
+                            msgField.textContent = `${user.username}`;
                             currentChatUser = user.username;
 
                             const chatElement = document.createElement('div');
@@ -260,7 +262,7 @@
             // messageElement.textContent = `${currentChatUser}: ${msg}`;
             // messageArea.appendChild(messageElement);
 
-            const messageElement = createMessageElement('{{ session.username }}', msg);
+            const messageElement = createMessageElement('', msg);
             messageArea.appendChild(messageElement);
         });
     }
@@ -300,7 +302,7 @@
         if (message === '') return;
 
         // Создаем новый элемент для отображения отправленного сообщения
-        const messageElement = createMessageElement('{{ session.username }}', message);
+        const messageElement = createMessageElement('', message);
         messageArea.appendChild(messageElement);
 
         // Сохраняем сообщение в массив сообщений для текущего чата

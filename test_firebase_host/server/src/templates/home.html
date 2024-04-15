@@ -1,0 +1,331 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="limiter">
+    <div class="container-login100 wrap-login101">
+        <form class="login100-form-title" id="searchForm">
+            <div class="custom-input">
+                <input type="text" id="searchQuery" name="search_query" placeholder="Search by username">
+            </div>
+        </form>
+        
+        <div class="scrollingtable">
+            <div>
+                <div>
+                    <table>
+                        <tbody>
+                            <div class="login100-form-title p-b-21" id="searchResults"></div>
+                            <div id="chatDiv">
+                                
+                                <!-- <button class="chat-button" onclick="handleChatButtonClick('{{ session.username }}')"> -->
+                                <button class="chat-button" onclick="handleChatButtonClick('Favorites')">
+                                    <div class="limiter">
+                                        <div>
+                                            <div class="wrap-Chat_Favorite p-t-10 p-b-50">
+                                                <div class="container-login100-form-btn block">
+                                                    <div class="wrap-kolo p-t-10 p-b-50">
+                                                    </div>
+                                                    <p class="Text_ChatUsername">favorites</p>
+                                                    <!-- <p class="Text_ChatUsername">{{ session.username }}</p> -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </button>
+
+                                <!-- <a class="login100-form-btn" href="/logout">Logout</a> -->
+                                <button class="login100-form-btn" onclick="logout()">Logout</button>
+                                
+                            </div>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="scrollingtable_msg_field">
+            <div>
+                <div>
+                    <table>
+                        <tbody>
+                            <div class="login100-form-title p-b-21 container" id="searchResults"></div>
+                            <!-- <div class="fixed-block"></div> -->
+                                <!-- <div class="scroll"></div> -->
+                            <div>
+                                <p class="Text_Chat_in_Username">UserName</p>
+                                <div class="custom-input fixed-block">
+                                    <input class="input_s" type="text" id="messageInput" placeholder="Text msg">
+                                    <button class="bt" onclick="sendMessage()">Send</button>
+                                </div>
+                            </div>
+                            <!-- Ваш HTML код для области чата -->
+                            <!-- <div id="messageArea" class="message-area"></div> -->
+                            <div class="message-area" id="messageArea">
+                            </div>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+
+<script>
+    const searchForm = document.getElementById('searchForm');
+    const searchQueryInput = document.getElementById('searchQuery');
+    const searchResultsDiv = document.getElementById('searchResults');
+    const chatDiv = document.getElementById('chatDiv');
+    const msgField = document.querySelector('.scrollingtable_msg_field p');
+    const messageInput = document.getElementById('messageInput');
+    const messageArea = document.getElementById('messageArea');
+
+    const socket = io();
+
+    let currentChatUser = '{{ session.username }}';
+
+    // Получение сохраненных чатов из localStorage
+    const savedChats = JSON.parse(localStorage.getItem('chats')) || [];
+    // Получение сохраненных сообщений из localStorage
+    const savedMessages = JSON.parse(localStorage.getItem('messages')) || {};
+
+    // Функция для обновления localStorage с новыми чатами
+    const updateLocalStorage = (key, data) => {
+        localStorage.setItem(key, JSON.stringify(data));
+    };
+
+    function createChatElement(username) {
+        const chatElement = document.createElement('div');
+        chatElement.classList.add('limiter');
+        chatElement.innerHTML = `
+            <button class="chat-button" onclick="handleChatButtonClick('${username}')">
+                <div class="limiter">
+                    <div>
+                        <div class="wrap-Chat_Favorite p-t-10 p-b-50">
+                            <div class="container-login100-form-btn block">
+                                <div class="wrap-kolo p-t-10 p-b-50">
+                                </div>
+                                <p class="Text_ChatUsername">${username}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </button>
+        `;
+        return chatElement;
+    }
+
+    function createMessageElement(sender, message, time) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', sender === '{{ session.username }}' ? 'outgoing-message' : 'outgoing-message');
+        
+        const usernameElement = document.createElement('div');
+        usernameElement.classList.add('Text_msg_Username');
+        usernameElement.textContent = sender;
+        
+        const timeElement = document.createElement('div');
+        timeElement.classList.add('message-time');
+        timeElement.textContent = time;
+        
+        const textElement = document.createElement('div');
+        textElement.classList.add('text');
+        textElement.textContent = message;
+        
+        messageElement.appendChild(usernameElement);
+        messageElement.appendChild(timeElement);
+        messageElement.appendChild(textElement);
+
+        return messageElement;
+    }
+
+
+
+
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = "/logout";
+    }
+
+    searchForm.addEventListener('input', function(event) {
+        const searchQuery = searchQueryInput.value;
+        if (searchQuery.trim() === '') {
+            searchResultsDiv.innerHTML = '';
+            chatDiv.style.display = 'block'; // Показываем чаты, если поле поиска пустое
+            return;
+        }
+
+        // Скрываем чаты, если поле поиска не пустое
+        chatDiv.style.display = 'none';
+
+        fetch('/search', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                'search_query': searchQuery
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            searchResultsDiv.innerHTML = '';
+            if (data.users) {
+                data.users.forEach(user => {
+                    if (!savedChats.includes(user.username)) {
+                        const button = document.createElement('button');
+                        button.textContent = user.username;
+                        button.addEventListener('click', function() {
+                            // Обновление текста в элементе <p> при нажатии на кнопку чата
+                            msgField.textContent = `Chat with ${user.username}`;
+                            currentChatUser = user.username;
+
+                            const chatElement = document.createElement('div');
+                            chatElement.classList.add('limiter');
+                            chatElement.innerHTML = `
+                                <button class="chat-button" onclick="handleChatButtonClick('${user.username}')">
+                                    <div class="limiter">
+                                        <div>
+                                            <div class="wrap-Chat_Favorite p-t-10 p-b-50">
+                                                <div class="container-login100-form-btn block">
+                                                    <div class="wrap-kolo p-t-10 p-b-50">
+                                                    </div>
+                                                    <p class="Text_ChatUsername">${user.username}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </button>
+                            `;
+                            chatDiv.appendChild(chatElement);
+
+                            // Добавление нового чата в массив сохраненных чатов
+                            savedChats.push(user.username);
+                            // Обновление localStorage
+                            updateLocalStorage('chats', savedChats);
+                        });
+                        searchResultsDiv.appendChild(button);
+                    }
+                });
+            } else {
+                searchResultsDiv.innerHTML = '<p>No results found.</p>';
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    // Восстановление чатов при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+        savedChats.forEach(username => {
+            const chatElement = document.createElement('div');
+            chatElement.classList.add('limiter');
+            chatElement.innerHTML = `
+                <button class="chat-button" onclick="handleChatButtonClick('${username}')">
+                    <div class="limiter">
+                        <div>
+                            <div class="wrap-Chat_Favorite p-t-10 p-b-50">
+                                <div class="container-login100-form-btn block">
+                                    <div class="wrap-kolo p-t-10 p-b-50">
+                                    </div>
+                                    <p class="Text_ChatUsername">${username}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </button>
+            `;
+            chatDiv.appendChild(chatElement);
+        });
+
+        // Восстановление сообщений для текущего чата при загрузке страницы
+        const currentChatMessages = savedMessages[currentChatUser] || [];
+        currentChatMessages.forEach(msg => {
+            const messageElement = createMessageElement('{{ session.username }}', msg);
+            messageArea.appendChild(messageElement);
+        });
+    });
+
+    // Функция для обработки нажатия на кнопку чата
+    function handleChatButtonClick(username) {
+        msgField.textContent = `${username}`;
+        currentChatUser = username;
+
+        // Очищаем область сообщений при выборе нового чата
+        messageArea.innerHTML = '';
+
+        // Восстанавливаем сообщения для выбранного чата из localStorage
+        const currentChatMessages = savedMessages[currentChatUser] || [];
+        currentChatMessages.forEach(msg => {
+            // const messageElement = document.createElement('div');
+            // messageElement.textContent = `${currentChatUser}: ${msg}`;
+            // messageArea.appendChild(messageElement);
+
+            const messageElement = createMessageElement('{{ session.username }}', msg);
+            messageArea.appendChild(messageElement);
+        });
+    }
+
+    // Обработчик для получения сообщений через WebSocket
+    socket.on('receiveMessage', function(data) {
+        const sender = data.sender;
+        const receiver = data.receiver;
+        const message = data.message;
+
+        // Отображаем сообщение только если получатель совпадает с текущим активным чатом
+        if (receiver === '{{ session.username }}') {
+
+            const messageElement = createMessageElement(sender, message);
+            messageArea.appendChild(messageElement);
+
+            // Если отправитель совпадает с текущим чатом, обновляем область сообщений
+            if (currentChatUser === sender) {
+                messageArea.appendChild(messageElement);
+
+                // Прокручиваем область сообщений вниз, чтобы показать новое сообщение
+                messageArea.scrollTop = messageArea.scrollHeight;
+            }
+
+            // Сохраняем сообщение в массив сообщений для отправителя и получателя
+            savedMessages[sender] = savedMessages[sender] || [];
+            savedMessages[sender].push(message);
+
+            // Сохраняем обновленные сообщения в localStorage
+            updateLocalStorage('messages', savedMessages);
+        }
+    });
+
+    // Функция для отправки сообщения
+    function sendMessage() {
+        const message = messageInput.value.trim();
+        if (message === '') return;
+
+        // Создаем новый элемент для отображения отправленного сообщения
+        const messageElement = createMessageElement('{{ session.username }}', message);
+        messageArea.appendChild(messageElement);
+
+        // Сохраняем сообщение в массив сообщений для текущего чата
+        savedMessages[currentChatUser] = savedMessages[currentChatUser] || [];
+        savedMessages[currentChatUser].push(message);
+
+        // Сохраняем обновленные сообщения в localStorage
+        updateLocalStorage('messages', savedMessages);
+
+        // Прокручиваем область сообщений вниз, чтобы показать новое сообщение
+        messageArea.scrollTop = messageArea.scrollHeight;
+
+        // Отправляем сообщение через WebSocket
+        socket.emit('sendMessage', {'sender': '{{ session.username }}', 'receiver': currentChatUser, 'message': message});
+
+        // Очищаем поле ввода сообщения после отправки
+        messageInput.value = '';
+    }
+
+
+</script>
+
+
+
+
+
+    
+{% endblock %}

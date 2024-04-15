@@ -196,6 +196,23 @@ div.fixed-block {
 .scrollingtable > div > div > table > tbody > tr > * + * {border-left: 1px solid black;} /*borders between body cells*/
 
 
+.tisi {
+  /* box-sizing: border-box; */
+  /* display: inline-block; */
+  /* vertical-align: middle; */
+  /* overflow: hidden; */
+  /* width: 380px; */
+  /* min-width: 0; */
+  /* height: 758px100%; */
+  /* min-height: 0; */
+  /* font-family: Verdana, Tahoma, sans-serif; */
+  /* font-size: 15px; */
+  /* line-height: 20px; */
+  /* padding: 20px 0 20px 0; */
+  /* text-align: left; */
+  /* padding-top: revert-layer; */
+  padding-left: 20px;
+}
 
 
 .scrollingtable_msg_field {
@@ -500,7 +517,7 @@ iframe {
   border-radius: 10px;
   position: relative;
   /* margin-top: 10px; */
-  margin-left: 10px;
+  /* margin-left: 10px; */
 }
 
 .wrap-Chat_Favorite {
@@ -521,6 +538,14 @@ iframe {
   font-weight: bold;
 }
 
+.Text_ChatUsername_fv {
+  color: #B8B8C6;
+  font-size: 30px;
+  margin-left: 15px;
+  /* margin-top: -15px; */
+  font-weight: bold;
+}
+
 .Text_msg_Username {
   color: #B8B8C6;
   font-size: 16px;
@@ -529,7 +554,7 @@ iframe {
   font-weight: bold;
 }
 .text {
-  color: #fff;
+  color: #B8B8C6;
   font-size: 15px;
   word-wrap: break-word;
 
@@ -553,6 +578,13 @@ iframe {
     margin-left: 8px;
 }
 
+.wrap-favorite {
+  width: 60px;
+  background: #6FA1DB;
+  border-radius: 586px;
+  margin-top: 0px;
+    margin-left: 8px;
+}
 
 /* :root {
   --square-size: 200px;
@@ -578,12 +610,16 @@ iframe {
   /* text-transform: uppercase; */
   text-align: center;
 
-  width: 100%;
+  /* width: 100%; */
   display: block;
 }
 
 body, html {
   background-color: #B4ABAB;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
 }
 /* input {
   background-color: #BFB7B7;

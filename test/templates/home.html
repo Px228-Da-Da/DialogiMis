@@ -72,6 +72,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 
 <script>
+    if (screen.width <= 699 && window.location.pathname !== '/home_mobile') {
+        window.location.href = "/home_mobile";
+    }
     const searchForm = document.getElementById('searchForm');
     const searchQueryInput = document.getElementById('searchQuery');
     const searchResultsDiv = document.getElementById('searchResults');

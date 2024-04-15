@@ -79,12 +79,29 @@ def handle_signup(data):
         socketio.emit('email_verification_error', str(e), room=request.sid)
 
 
-@app.route('/', methods=['GET'])
+@app.route('/')
 def index():
+    print("Index route")
     if session.get('logged_in'):
         return render_template('home.html')
+    elif request.args.get('mobile') == 'true':
+        print("Mobile device detected")
+        session['home_mobile'] = True
+        return render_template('home_mobile.html')
+    elif session.get('home_mobile'):
+        print("Already on home_mobile.html")
+        return render_template('home_mobile.html')
     else:
         return render_template('index.html', message="lalala")
+
+@app.route('/home_mobile', methods=['GET', 'POST'])
+def home_mobile():
+    session['home_mobile'] = False
+    if request.method == 'GET':
+        return render_template('home_mobile.html')
+    else:
+        return redirect(url_for('index'))
+
 
 
 @app.route('/register/', methods=['GET', 'POST'])
@@ -240,6 +257,8 @@ def logout():
     session.pop('email', None)
     session.pop('idToken', None)  # Remove the ID token from the session
     return redirect(url_for('index'))
+
+
 
 # @app.route('/search', methods=['POST'])
 # def search():
