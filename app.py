@@ -116,4 +116,5 @@ if __name__ == '__main__':
     app.secret_key = "ThisIsNotASecret:p"
     with app.app_context():
         db.create_all()
-    socketio.run(app, debug=True, host='0.0.0.0', port=5000)
+    socketio.run(app, debug=True, host='0.0.0.0', port=5500)
+

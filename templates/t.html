@@ -1,0 +1,52 @@
+<!DOCTYPE html> 
+<html>
+  <head>
+    <title> 
+      Отключение масштабирования
+    </title>
+    <meta meta name="viewport" content="width=device-width, user-scalable=no" />
+    <style> 
+      body { 
+      width:500px; 
+      border: 3px solid #4a91d8; 
+      } 
+      h1{
+      color: #4a91d8;
+      text-align:center;
+      text-shadow: 1px 3px 2px #000;
+      }
+      p {      
+      font-size:18px;  
+      padding:5px 0; 
+      margin:10px; 
+      width:220px; 
+      height:320px; 
+      border:2px solid #4a91d8; 
+      } 
+      div::after {
+      content: "";
+      clear: both;
+      display: table;
+      }
+      p:first-child{
+      float:left;
+      }
+      p:last-child{
+      float:right;
+      }
+    </style>
+  </head>
+  <body>
+    <h1> 
+      Lorem Ipsum
+    </h1>
+    <div class="clearfix">
+      <p>  
+        Lorem Ipsum - это текст-"рыба", часто используемый в печати и вэб-дизайне. Lorem Ipsum является стандартной "рыбой" для текстов на латинице с начала XVI века. В то время некий безымянный печатник создал большую коллекцию размеров и форм шрифтов, используя Lorem Ipsum для распечатки образцов. Lorem Ipsum не только успешно пережил без заметных изменений пять веков, но и перешагнул в электронный дизайн.
+      </p>
+      <p> 
+        Lorem Ipsum - это текст-"рыба", часто используемый в печати и вэб-дизайне. Lorem Ipsum является стандартной "рыбой" для текстов на латинице с начала XVI века. В то время некий безымянный печатник создал большую коллекцию размеров и форм шрифтов, используя Lorem Ipsum для распечатки образцов. Lorem Ipsum не только успешно пережил без заметных изменений пять веков, но и перешагнул в электронный дизайн.
+      </p>
+    </div>
+  </body>
+</html>

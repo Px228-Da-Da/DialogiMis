@@ -3,7 +3,7 @@
 <div class="limiter">
     <div class="container-login100 wrap-login101 fullscreen-div">
         <form class="login100-form-title" id="searchForm">
-            <div class="custom-input">
+            <div class="custom-input1">
                 <input type="text" id="searchQuery" name="search_query" placeholder="Search by username">
             </div>
         </form>
@@ -85,6 +85,15 @@
     const socket = io();
 
     let currentChatUser = '{{ session.username }}';
+
+
+    // const sendButton = document.querySelector('.bt');
+
+    // if (msgField.textContent.includes('UserName')) {
+    //     msgField.textContent = msgField.textContent.replace('UserName', '');
+    //     messageInput.style.display = 'none';
+    //     sendButton.style.display = 'none';
+    // }
 
     // Получение сохраненных чатов из localStorage
     const savedChats = JSON.parse(localStorage.getItem('chats')) || [];
