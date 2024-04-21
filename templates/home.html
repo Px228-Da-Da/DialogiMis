@@ -128,26 +128,30 @@
 
     function createMessageElement(sender, message, time) {
         const messageElement = document.createElement('div');
-        messageElement.classList.add('message', sender === '{{ session.username }}' ? 'outgoing-message' : 'outgoing-message');
-        
+        messageElement.classList.add('message');
         const usernameElement = document.createElement('div');
         usernameElement.classList.add('Text_msg_Username');
         usernameElement.textContent = sender;
-        
         const timeElement = document.createElement('div');
         timeElement.classList.add('message-time');
         timeElement.textContent = time;
-        
         const textElement = document.createElement('div');
         textElement.classList.add('text');
         textElement.textContent = message;
-        
         messageElement.appendChild(usernameElement);
         messageElement.appendChild(timeElement);
         messageElement.appendChild(textElement);
 
+        // Добавим классы для исходящего и входящего сообщений
+        if (sender === '{{ session.username }}') {
+            messageElement.classList.add('incoming-message');
+        } else {
+            messageElement.classList.add('outgoing-message');
+        }
+
         return messageElement;
     }
+
 
 
 
@@ -282,19 +286,27 @@
         const receiver = data.receiver;
         const message = data.message;
 
-        // Отображаем сообщение только если получатель совпадает с текущим активным чатом
+        // Проверяем, что сообщение адресовано текущему пользователю
         if (receiver === '{{ session.username }}') {
-
+            // Создаем элемент сообщения
             const messageElement = createMessageElement(sender, message);
+
+            // Определяем класс выравнивания в зависимости от отправителя сообщения
+            let messageAlignmentClass = '';
+            if (sender === '{{ session.username }}') {
+                messageAlignmentClass = 'outgoing-message'; // Сообщение отправлено текущим пользователем, выравниваем справа
+            } else {
+                messageAlignmentClass = 'incoming-message'; // Сообщение отправлено другим пользователем, выравниваем слева
+            }
+
+            // Добавляем класс выравнивания к сообщению
+            messageElement.classList.add(messageAlignmentClass);
+
+            // Добавляем сообщение в область чата
             messageArea.appendChild(messageElement);
 
-            // Если отправитель совпадает с текущим чатом, обновляем область сообщений
-            if (currentChatUser === sender) {
-                messageArea.appendChild(messageElement);
-
-                // Прокручиваем область сообщений вниз, чтобы показать новое сообщение
-                messageArea.scrollTop = messageArea.scrollHeight;
-            }
+            // Прокручиваем область сообщений вниз, чтобы показать новое сообщение
+            messageArea.scrollTop = messageArea.scrollHeight;
 
             // Сохраняем сообщение в массив сообщений для отправителя и получателя
             savedMessages[sender] = savedMessages[sender] || [];
@@ -304,6 +316,8 @@
             updateLocalStorage('messages', savedMessages);
         }
     });
+
+
 
     // Функция для отправки сообщения
     function sendMessage() {

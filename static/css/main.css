@@ -42,7 +42,7 @@ div.fixed-block {
   margin-bottom: 15px;
   padding: 13px;
   background-color: #625F5F;
-  width: 200px;
+  width: 340px;
   /* height: 50px; */
   text-align: left;
   font: 400 0.9em 'Open Sans', sans-serif;
@@ -59,13 +59,15 @@ div.fixed-block {
 }
 
 .outgoing-message {
-  background-color: #625F5F; /* Цвет фона для отправленных сообщений */
-  align-self: flex-end; /* Выравнивание отправленных сообщений вправо */
+  text-align: right;
+  background-color: #2979FF;
 }
 
 .incoming-message {
-  background-color: #ECE5DD; /* Цвет фона для полученных сообщений */
+  text-align: left;
+  background-color: #625F5F;
 }
+
 
 .message:after {
   content: '';
