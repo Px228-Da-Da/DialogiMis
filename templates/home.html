@@ -15,8 +15,6 @@
                         <tbody>
                             <div class="login100-form-title p-b-21" id="searchResults"></div>
                             <div id="chatDiv">
-                                
-                                <!-- <button class="chat-button" onclick="handleChatButtonClick('{{ session.username }}')"> -->
                                 <button class="chat-button" onclick="handleChatButtonClick('Favorites')">
                                     <div class="limiter">
                                         <div>
@@ -25,16 +23,11 @@
                                                     <div class="wrap-favorite p-t-10 p-b-50">
                                                     </div>
                                                     <p class="Text_ChatUsername_fv">favorites</p>
-                                                    <!-- <p class="Text_ChatUsername">{{ session.username }}</p> -->
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </button>
-
-                                <!-- <a class="login100-form-btn" href="/logout">Logout</a> -->
-                                <!-- <button class="login100-form-btn" onclick="logout()">Logout</button> -->
-                                
                             </div>
                         </tbody>
                     </table>
@@ -51,17 +44,12 @@
                     <table>
                         <tbody>
                             <div class="login100-form-title p-b-21 container" id="searchResults"></div>
-                            <!-- <div class="fixed-block"></div> -->
-                                <!-- <div class="scroll"></div> -->
                             <div>
-                                <!-- <p class="Text_Chat_in_Username">UserName</p> -->
                                 <div class="custom-input fixed-block">
                                     <input class="input_s" type="text" id="messageInput" placeholder="Text msg">
                                     <button class="bt" onclick="sendMessage()">Send</button>
                                 </div>
                             </div>
-                            <!-- Ваш HTML код для области чата -->
-                            <!-- <div id="messageArea" class="message-area"></div> -->
                             <div class="message-area" id="messageArea">
                             </div>
                         </tbody>
@@ -86,21 +74,9 @@
 
     let currentChatUser = '{{ session.username }}';
 
-
-    // const sendButton = document.querySelector('.bt');
-
-    // if (msgField.textContent.includes('UserName')) {
-    //     msgField.textContent = msgField.textContent.replace('UserName', '');
-    //     messageInput.style.display = 'none';
-    //     sendButton.style.display = 'none';
-    // }
-
-    // Получение сохраненных чатов из localStorage
     const savedChats = JSON.parse(localStorage.getItem('chats')) || [];
-    // Получение сохраненных сообщений из localStorage
     const savedMessages = JSON.parse(localStorage.getItem('messages')) || {};
 
-    // Функция для обновления localStorage с новыми чатами
     const updateLocalStorage = (key, data) => {
         localStorage.setItem(key, JSON.stringify(data));
     };
@@ -126,35 +102,59 @@
         return chatElement;
     }
 
-    function createMessageElement(sender, message, time) {
+    // function createMessageElement(sender, message, time, isSent) {
+    //     const messageElement = document.createElement('div');
+    //     messageElement.classList.add('message');
+    //     const usernameElement = document.createElement('div');
+    //     usernameElement.classList.add('Text_msg_Username');
+    //     usernameElement.textContent = sender;
+    //     const timeElement = document.createElement('div');
+    //     timeElement.classList.add('message-time');
+    //     timeElement.textContent = time;
+    //     const textElement = document.createElement('div');
+    //     textElement.classList.add('text');
+    //     textElement.textContent = message;
+    //     messageElement.appendChild(usernameElement);
+    //     messageElement.appendChild(timeElement);
+    //     messageElement.appendChild(textElement);
+
+    //     if (isSent) {
+    //         messageElement.classList.add('outgoing-message');
+    //     } else {
+    //         messageElement.classList.add('incoming-message');
+    //     }
+
+    //     return messageElement;
+    // }
+    function createMessageElement(sender, message, time, isSent) {
         const messageElement = document.createElement('div');
-        messageElement.classList.add('message');
+        // messageElement.classList.add('message');
+
         const usernameElement = document.createElement('div');
         usernameElement.classList.add('Text_msg_Username');
         usernameElement.textContent = sender;
+
         const timeElement = document.createElement('div');
         timeElement.classList.add('message-time');
         timeElement.textContent = time;
+
         const textElement = document.createElement('div');
         textElement.classList.add('text');
         textElement.textContent = message;
+
         messageElement.appendChild(usernameElement);
         messageElement.appendChild(timeElement);
         messageElement.appendChild(textElement);
 
-        // Добавим классы для исходящего и входящего сообщений
-        if (sender === '{{ session.username }}') {
-            messageElement.classList.add('incoming-message');
+        // Добавляем класс для исходящих и входящих сообщений
+        if (isSent) {
+            messageElement.classList.add('message_out', 'outgoing-message'); // Добавляем класс message_out для исходящих сообщений
         } else {
-            messageElement.classList.add('outgoing-message');
+            messageElement.classList.add('message', 'incoming-message');
         }
 
         return messageElement;
     }
-
-
-
-
 
 
     function logout() {
@@ -166,11 +166,10 @@
         const searchQuery = searchQueryInput.value;
         if (searchQuery.trim() === '') {
             searchResultsDiv.innerHTML = '';
-            chatDiv.style.display = 'block'; // Показываем чаты, если поле поиска пустое
+            chatDiv.style.display = 'block';
             return;
         }
 
-        // Скрываем чаты, если поле поиска не пустое
         chatDiv.style.display = 'none';
 
         fetch('/search', {
@@ -191,7 +190,6 @@
                         const button = document.createElement('button');
                         button.textContent = user.username;
                         button.addEventListener('click', function() {
-                            // Обновление текста в элементе <p> при нажатии на кнопку чата
                             msgField.textContent = `${user.username}`;
                             currentChatUser = user.username;
 
@@ -214,9 +212,7 @@
                             `;
                             chatDiv.appendChild(chatElement);
 
-                            // Добавление нового чата в массив сохраненных чатов
                             savedChats.push(user.username);
-                            // Обновление localStorage
                             updateLocalStorage('chats', savedChats);
                         });
                         searchResultsDiv.appendChild(button);
@@ -229,7 +225,6 @@
         .catch(error => console.error('Error:', error));
     });
 
-    // Восстановление чатов при загрузке страницы
     document.addEventListener('DOMContentLoaded', function() {
         savedChats.forEach(username => {
             const chatElement = document.createElement('div');
@@ -252,105 +247,64 @@
             chatDiv.appendChild(chatElement);
         });
 
-        // Восстановление сообщений для текущего чата при загрузке страницы
         const currentChatMessages = savedMessages[currentChatUser] || [];
         currentChatMessages.forEach(msg => {
-            const messageElement = createMessageElement('{{ session.username }}', msg);
+            const messageElement = createMessageElement(msg.sender, msg.message, msg.time, msg.isSent);
             messageArea.appendChild(messageElement);
         });
     });
 
-    // Функция для обработки нажатия на кнопку чата
     function handleChatButtonClick(username) {
         msgField.textContent = `${username}`;
         currentChatUser = username;
 
-        // Очищаем область сообщений при выборе нового чата
         messageArea.innerHTML = '';
 
-        // Восстанавливаем сообщения для выбранного чата из localStorage
         const currentChatMessages = savedMessages[currentChatUser] || [];
         currentChatMessages.forEach(msg => {
-            // const messageElement = document.createElement('div');
-            // messageElement.textContent = `${currentChatUser}: ${msg}`;
-            // messageArea.appendChild(messageElement);
-
-            const messageElement = createMessageElement('', msg);
+            const messageElement = createMessageElement(msg.sender, msg.message, msg.time, msg.isSent);
             messageArea.appendChild(messageElement);
         });
     }
 
-    // Обработчик для получения сообщений через WebSocket
     socket.on('receiveMessage', function(data) {
         const sender = data.sender;
         const receiver = data.receiver;
         const message = data.message;
 
-        // Проверяем, что сообщение адресовано текущему пользователю
         if (receiver === '{{ session.username }}') {
-            // Создаем элемент сообщения
-            const messageElement = createMessageElement(sender, message);
+            const messageElement = createMessageElement(sender, message, new Date().toLocaleTimeString(), false);
 
-            // Определяем класс выравнивания в зависимости от отправителя сообщения
-            let messageAlignmentClass = '';
-            if (sender === '{{ session.username }}') {
-                messageAlignmentClass = 'outgoing-message'; // Сообщение отправлено текущим пользователем, выравниваем справа
-            } else {
-                messageAlignmentClass = 'incoming-message'; // Сообщение отправлено другим пользователем, выравниваем слева
-            }
-
-            // Добавляем класс выравнивания к сообщению
-            messageElement.classList.add(messageAlignmentClass);
-
-            // Добавляем сообщение в область чата
             messageArea.appendChild(messageElement);
-
-            // Прокручиваем область сообщений вниз, чтобы показать новое сообщение
             messageArea.scrollTop = messageArea.scrollHeight;
 
-            // Сохраняем сообщение в массив сообщений для отправителя и получателя
             savedMessages[sender] = savedMessages[sender] || [];
-            savedMessages[sender].push(message);
+            savedMessages[sender].push({ sender: sender, message: message, time: new Date().toLocaleTimeString(), isSent: false });
 
-            // Сохраняем обновленные сообщения в localStorage
             updateLocalStorage('messages', savedMessages);
         }
     });
 
-
-
-    // Функция для отправки сообщения
     function sendMessage() {
         const message = messageInput.value.trim();
         if (message === '') return;
 
-        // Создаем новый элемент для отображения отправленного сообщения
-        const messageElement = createMessageElement('', message);
+        const currentTime = new Date().toLocaleTimeString(); // Получаем текущее время
+
+        const messageElement = createMessageElement('{{ session.username }}', message, currentTime, true);
         messageArea.appendChild(messageElement);
 
-        // Сохраняем сообщение в массив сообщений для текущего чата
         savedMessages[currentChatUser] = savedMessages[currentChatUser] || [];
-        savedMessages[currentChatUser].push(message);
+        savedMessages[currentChatUser].push({ sender: '{{ session.username }}', message: message, time: currentTime, isSent: true });
 
-        // Сохраняем обновленные сообщения в localStorage
         updateLocalStorage('messages', savedMessages);
 
-        // Прокручиваем область сообщений вниз, чтобы показать новое сообщение
         messageArea.scrollTop = messageArea.scrollHeight;
 
-        // Отправляем сообщение через WebSocket
         socket.emit('sendMessage', {'sender': '{{ session.username }}', 'receiver': currentChatUser, 'message': message});
 
-        // Очищаем поле ввода сообщения после отправки
         messageInput.value = '';
     }
 
-
 </script>
-
-
-
-
-
-    
 {% endblock %}

@@ -1,4 +1,5 @@
 .message-area {
+  width: 612px;
   color: #000;
     position: absolute;
     top: 20px; /* Используем значение, которое не перекрывается внутренними элементами */
@@ -34,7 +35,34 @@ div.fixed-block {
   z-index: 2;
 }
 
+.message_out {
+  position: relative;
+  margin-left: 41%; /* Используем margin-left: auto; для выравнивания справа */
+  margin-bottom: 15px;
+  padding: 13px;
+  background-color: #625F5F;
+  width: 340px;
+  text-align: left;
+  font: 400 0.9em 'Open Sans', sans-serif;
+  border: 1px solid #625F5F;
+  border-bottom-left-radius: 8px;
+  border-top-right-radius: 8px;
+  border-top-left-radius: 8px;
+}
 
+.message_out:after {
+    content: '';
+    position: absolute;
+    /* width: 0; */
+    /* height: 85px; */
+    border-top: 10px solid #625F5F;
+    border-left: 16px solid transparent;
+    right: -8px;
+    /* top: 82%; */
+    border-top-left-radius: 26px;
+    border-top-right-radius: 43px;
+    transform: rotate(52deg);
+}
 
 .message {
   position: relative;
@@ -60,7 +88,7 @@ div.fixed-block {
 
 .outgoing-message {
   text-align: right;
-  background-color: #2979FF;
+  background-color: #625F5F;
 }
 
 .incoming-message {
