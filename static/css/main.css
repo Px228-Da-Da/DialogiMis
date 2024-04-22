@@ -1,18 +1,22 @@
 .message-area {
-  width: 612px;
+  width: 100%;
   color: #000;
-    position: absolute;
-    top: 20px; /* Используем значение, которое не перекрывается внутренними элементами */
-    /* left: 0; */
-    /* right: 0; */
-    bottom: 55px; /* Занимаем всю доступную высоту */
-    overflow-y: auto;
-
+  position: absolute;
+  top: 40px; /* Учтите, что здесь вы должны учитывать высоту области чата */
+  right: 0;
+  bottom: 55px;
+  overflow-y: auto;
+  margin-bottom: 60px; /* Добавляем отступ снизу, больше чем высота нижней части чата */
 }
+
+.message-time {
+  color: #737f87;
+}
+
 
 .bt {
   color: #000;
-  position: absolute;
+  /* position: absolute; */
 }
 
 
@@ -32,15 +36,17 @@ div.scroll {
 div.fixed-block {
   position: absolute;
   bottom: 0;
+  left: 0;
   z-index: 2;
 }
 
 .message_out {
   position: relative;
-  margin-left: 41%; /* Используем margin-left: auto; для выравнивания справа */
+  margin-left: auto;
   margin-bottom: 15px;
+  right: 10px;
   padding: 13px;
-  background-color: #625F5F;
+  background-color: #2d2d2d;
   width: 340px;
   text-align: left;
   font: 400 0.9em 'Open Sans', sans-serif;
@@ -48,20 +54,20 @@ div.fixed-block {
   border-bottom-left-radius: 8px;
   border-top-right-radius: 8px;
   border-top-left-radius: 8px;
+  border-bottom-right-radius: 3px;
 }
 
 .message_out:after {
-    content: '';
-    position: absolute;
-    /* width: 0; */
-    /* height: 85px; */
-    border-top: 10px solid #625F5F;
-    border-left: 16px solid transparent;
-    right: -8px;
-    /* top: 82%; */
-    border-top-left-radius: 26px;
-    border-top-right-radius: 43px;
-    transform: rotate(52deg);
+  content: '';
+  position: absolute;
+  border-top: 9px solid #2d2d2d;
+  border-left: 18px solid transparent;
+  right: -7px;
+  bottom: 5px;
+  /* top: 47px; */
+  border-top-left-radius: 121px;
+  border-top-right-radius: 74px;
+  transform: rotate(59deg);
 }
 
 .message {
@@ -88,28 +94,28 @@ div.fixed-block {
 
 .outgoing-message {
   text-align: right;
-  background-color: #625F5F;
+  /* background-color: #625F5F; */
 }
 
 .incoming-message {
   text-align: left;
-  background-color: #625F5F;
+  background-color: #34373b;
 }
 
 
 .message:after {
   content: '';
   position: absolute;
-  /* width: 0; */
-  /* height: 85px; */
-  border-top: 14px solid #625F5F;
-  border-left: 16px solid transparent;
+  width: 0;
+  height: 0;
+  border-top: 13px solid #34373b;
+  border-left: 15px solid transparent;
   /* border-right: 15px solid transparent; */
   /* top: 0; */
-  left: -8px;
+  left: -7px;
   border-top-left-radius: 162px;
   border-top-right-radius: 175px;
-  transform: rotate(237deg);
+  transform: rotate(229deg);
 }
 
 
@@ -118,15 +124,15 @@ div.fixed-block {
   box-sizing: border-box;
   display: inline-block;
   vertical-align: middle;
-  overflow: auto; /* Заменяем "hidden" на "auto" для прокрутки */
-  width: 380px;
+  overflow: auto;
+  width: 362px;
   min-width: 0;
   min-height: 0;
   font-family: Verdana, Tahoma, sans-serif;
   line-height: 20px;
-  padding: 20px 0; /* Убираем нижний отступ */
+  padding: 20px 0;
   text-align: left;
-  height: 100%; /* Задаем высоту 100% */
+  height: 100%;
 }
 
 .scrollingtable * {box-sizing: border-box;}
@@ -516,7 +522,40 @@ iframe {
   margin: 0 auto;
 }
 
+.fullscreen-div {
+  height: 80vh; /* Уменьшите высоту, чтобы освободить место для области сообщений */
+  overflow-y: auto; /* Добавьте вертикальную прокрутку, если содержимое становится слишком длинным */
+}
+
+.message-area-container {
+  position: fixed;
+  top: 0;
+  /* left: 0; */
+  right: 0;
+  bottom: 0;
+  width: calc(100% - 400px);
+  max-width: calc(100vw - 320px);
+  /* background-color: #ffffff; */
+  /* border-left: 1px solid #ccc; */
+  overflow-y: auto;
+  z-index: 999;
+  padding-left: 320px;
+}
+
+.container-login100.wrap-login101.fullscreen-div {
+  position: relative; /* чтобы блок с чатом был относительно этого контейнера */
+}
+
+#chatDiv {
+  width: 363px;
+  float: right;
+  padding-right: 20px;
+}
+
+
+
 .container-login100 {
+  max-width: 70%;
   width: 100%;  
   min-height: 100vh;
   display: -webkit-box;
@@ -587,7 +626,7 @@ iframe {
   font-weight: bold;
 }
 .text {
-  color: #B8B8C6;
+  color: #e4ecf2;
   font-size: 15px;
   word-wrap: break-word;
 
@@ -660,10 +699,16 @@ body, html {
   width: 300px;
 } */
 
+.custom-input .bt {
+  width: 100%;
+}
+
+
 .custom-input {
   /* background-color: #BFB7B7; */
   border-radius: 17px;
-  width: 300px;
+  /* width: 300px; */
+  width: calc(100% - 20px);
   font-size: 20px;
 }
 
@@ -691,17 +736,24 @@ body, html {
 }
 
 .custom-input input {
+  /* display: flex; */
+  /* justify-content: space-between; */
+  /* align-items: center; */
   width: 100%;
-  height: 100%;
+  /* height: 100%; */
   box-sizing: border-box;
   padding: 16px 10px 1px;
   border: 4px solid #323238;
-  border-radius: 17px;
+  border-radius: 16px;
   outline: none;
   background-color: #BFB7B7;
   color: #8F8FA1;
   font-size: 25px;
   /* margin-left: 40px; */
+  border-bottom-right-radius: 100px;
+  border-top-right-radius: 100px;
+  border-top-left-radius: 40px;
+  border-bottom-left-radius: 40px;
 }
 
 
