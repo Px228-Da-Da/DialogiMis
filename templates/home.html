@@ -59,6 +59,12 @@
             </div>
         </div>
     </div>
+
+    <!-- Контекстное меню для сообщений -->
+    <div id="contextMenu" class="context-menu" style="display: none;">
+        <button id="copyMessageBtn">Copy Message</button>
+        <!-- <button id="deleteMessageBtn">Delete Message</button> -->
+    </div>
     
     
 </div>
@@ -72,6 +78,78 @@
     const msgField = document.querySelector('.tisi p');
     const messageInput = document.getElementById('messageInput');
     const messageArea = document.getElementById('messageArea');
+    const contextMenu = document.getElementById('contextMenu');
+    const copyMessageBtn = document.getElementById('copyMessageBtn');
+    // const deleteMessageBtn = document.getElementById('deleteMessageBtn');
+    let selectedMessage = null;
+    let messageIdCounter = 0; // Добавлен счетчик для генерации уникальных идентификаторов сообщений
+
+    // Показать контекстное меню
+    function showContextMenu(x, y) {
+        contextMenu.style.display = 'block';
+        contextMenu.style.left = x + 'px';
+        contextMenu.style.top = y + 'px';
+    }
+
+    // Скрыть контекстное меню
+    function hideContextMenu() {
+        contextMenu.style.display = 'none';
+    }
+
+    // Удалить сообщение
+    function deleteMessage() {
+        if (selectedMessage) {
+            selectedMessage.remove();
+            hideContextMenu();
+        }
+    }
+
+    // Скопировать сообщение
+    function copyMessage() {
+        if (selectedMessage) {
+            const messageText = selectedMessage.querySelector('.text').textContent;
+            navigator.clipboard.writeText(messageText);
+        }
+        hideContextMenu();
+    }
+
+    // Обработчик события правой кнопки мыши на сообщении
+    function handleContextMenu(event) {
+        event.preventDefault();
+        selectedMessage = event.target.closest('.message');
+        if (selectedMessage) {
+            const x = event.clientX;
+            const y = event.clientY;
+            showContextMenu(x, y);
+        }
+    }
+
+    // Добавляем обработчики событий для кнопок контекстного меню
+    copyMessageBtn.addEventListener('click', copyMessage);
+    // deleteMessageBtn.addEventListener('click', deleteMessage);
+
+    // Добавляем обработчик события для контейнера сообщений
+    messageArea.addEventListener('contextmenu', handleContextMenu);
+
+    // Скрываем контекстное меню при клике вне его области
+    document.addEventListener('click', function(event) {
+        if (!contextMenu.contains(event.target)) {
+            hideContextMenu();
+        }
+    });
+
+    // Восстанавливаем удаленные сообщения при загрузке страницы
+    window.addEventListener('load', function() {
+        const deletedMessages = JSON.parse(localStorage.getItem('deletedMessages')) || [];
+        deletedMessages.forEach(messageId => {
+            const deletedMessage = document.querySelector(`[data-message-id="${messageId}"]`);
+            if (deletedMessage) {
+                deletedMessage.remove();
+            }
+        });
+    });
+
+
 
     const socket = io();
 
